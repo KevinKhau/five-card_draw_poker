@@ -1,0 +1,12 @@
+<h2>Hand</h2>
+<p *ngIf="isFlush()">Vous avez une couleur !</p>
+<ul>
+  <li
+    *ngFor="let card of cards" class="{{card.suit}}"
+    (click)="toggleThrow(this.card);"
+    [class.marked]="waste.includes(this.card)">
+    {{card.rank | rank}} {{card.suit | suit}}
+  </li>
+</ul>
+
+<button class="roll" (click)="roll()">{{'roll' | uppercase}}</button>

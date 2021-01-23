@@ -1,0 +1,20 @@
+:host ::ng-deep ul {
+  width: 650px;
+}
+
+:host ::ng-deep li {
+  list-style-type: none;
+  width: 40px;
+  line-height: 60px;
+  border: 1px solid;
+  margin: 2px;
+  padding: 2px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+  user-select: none;
+}
+
+:host ::ng-deep li.Heart, li.Diamond {
+  color: red;
+}
