@@ -1,5 +1,5 @@
 <h2>Hand</h2>
-<p *ngIf="isFlush()">Vous avez une couleur !</p>
+<p *ngIf="HandUtil.isFlush(cards)">Vous avez une couleur !</p>
 <ul>
   <li
     *ngFor="let card of cards" class="{{card.suit}}"

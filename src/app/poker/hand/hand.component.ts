@@ -1,9 +1,10 @@
 import {AfterContentInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Card, Suit} from '../../card';
+import {Card} from '../../card';
 import {Store} from '@ngrx/store';
 import {addCards, removeCards} from '../poker.action';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {HandUtil} from './hand.util';
 
 @Component({
   selector: 'app-hand',
@@ -20,6 +21,7 @@ export class HandComponent implements OnInit, AfterContentInit {
 
   private deck$: Observable<Card[]>;
   private readonly HAND_NUMBER = 5;
+  HandUtil = HandUtil;
 
   @Input()
   cards: Card[] = [];
@@ -56,12 +58,6 @@ export class HandComponent implements OnInit, AfterContentInit {
     this.deckStore.dispatch(addCards({cards: this.waste}));
     this.waste = [];
 
-  }
-
-  isFlush(): boolean {
-    if (this.cards.length < 5) return false;
-    const suit: Suit = this.cards[0].suit;
-    return this.cards.every(c => c.suit === suit);
   }
 
   pickCards(n: number, deck: Card[]): Card[] {
