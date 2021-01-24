@@ -4,7 +4,7 @@ import {Store} from '@ngrx/store';
 import {addCards, removeCards} from '../poker.action';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
-import {HandUtil} from './hand.util';
+import {FiveCardHandExtractorImpl, HandUtil} from './hand.util';
 
 @Component({
   selector: 'app-hand',
@@ -15,13 +15,14 @@ export class HandComponent implements OnInit, AfterContentInit {
 
   constructor(
     private deckStore: Store<{ deck: Card[] }>,
-    public handUtil: HandUtil = new HandUtil()
+    public handUtil: HandUtil = new HandUtil(),
+    public handExtractor: FiveCardHandExtractorImpl = new FiveCardHandExtractorImpl()
   ) {
     this.deck$ = this.deckStore.select('deck');
   }
 
   private deck$: Observable<Card[]>;
-  private readonly HAND_NUMBER = 5;
+  private readonly HAND_NUMBER = 15;
 
   @Input()
   cards: Card[] = [];
@@ -70,14 +71,14 @@ export class HandComponent implements OnInit, AfterContentInit {
     return draw;
   }
   pickCard(deck: Card[]): Card {
-    const index = HandComponent.getRandomInt(0, deck.length);
-    return deck.slice(index, index + 1)[0];
+    return [...deck].splice(HandComponent.getRandomInt(0, deck.length), 1)[0];
   }
 
   private drawCards(n: number): void {
-    this.deck$.pipe(first((deck: Card[]) => !!deck.length)).subscribe(deck => {
+    this.deck$.pipe(first((deck: Card[]) => deck && !!deck.length)).subscribe(deck => {
       setTimeout(() => {
         this.cards.push(...this.pickCards(n, deck));
+        console.log(this.handExtractor.getStraight(this.cards));
         this.deckStore.dispatch(removeCards({cards: this.cards}));
       });
     });

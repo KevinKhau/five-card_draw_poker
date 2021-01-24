@@ -39,11 +39,10 @@ export class PokerComponent implements OnInit {
   buildDeck(): void {
     const deck: Card[] = [];
     const ranks = Array.from({length: rankNumber}, (_, i) => i + 1);
-    Object.keys(Suit).forEach((suit: Suit) => {
-      ranks.forEach(rank => {
-        deck.push(new Card(rank, suit));
-      });
-    });
+    Object.keys(Suit)
+      .filter(key => isNaN(Number(key)))
+      .forEach((key) => ranks
+        .forEach(rank => deck.push(new Card(rank, Suit[key]))));
     PokerComponent.shuffle(deck);
     this.deckStore.dispatch(set({deck}));
   }

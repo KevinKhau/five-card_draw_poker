@@ -6,8 +6,8 @@ import {Suit} from '../card';
  */
 @Pipe({name: 'suit'})
 export class SuitPipe implements PipeTransform {
-  transform(value: Suit): string {
-    switch (Suit[value]) {
+  transform(value): string {
+    switch (value) {
       case Suit.Club:
         return '♣';
       case Suit.Diamond:

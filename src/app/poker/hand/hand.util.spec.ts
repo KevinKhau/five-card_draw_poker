@@ -1,4 +1,4 @@
-import {HandUtil} from './hand.util';
+import {FiveCardHandExtractorImpl, HandUtil} from './hand.util';
 import {Card, Suit} from '../../card';
 
 const empty = [];
@@ -21,7 +21,13 @@ const straightFlush = [new Card(6, Suit.Diamond), new Card(8, Suit.Diamond), new
 const royalFlush = [new Card(12, Suit.Diamond), new Card(13, Suit.Diamond), new Card(10, Suit.Diamond), new Card(11, Suit.Diamond),
   new Card(1, Suit.Diamond)];
 
+const sevenWithFlush = [new Card(1, Suit.Heart), new Card(10, Suit.Club), new Card(12, Suit.Heart), new Card(6, Suit.Heart),
+  new Card(9, Suit.Heart), new Card(2, Suit.Heart), new Card(10, Suit.Heart)];
+const sevenWithRoyalFlush = [new Card(10, Suit.Spade), new Card(12, Suit.Diamond), new Card(13, Suit.Diamond),
+  new Card(10, Suit.Diamond), new Card(9, Suit.Diamond), new Card(11, Suit.Diamond), new Card(1, Suit.Diamond)];
+
 const handUtil = new HandUtil();
+const handExtractor = new FiveCardHandExtractorImpl();
 
 describe('HandUtil.isFlush', () => {
   it('givenEmpty_whenIsFlush_thenFalse', () => expect(handUtil.isFlush(empty)).toBeFalsy());
@@ -37,4 +43,16 @@ describe('HandUtil.isStraight', () => {
   it('givenFlush_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(flush)).toBeFalsy());
   it('givenStraightFlush_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(straightFlush)).toBeTruthy());
   it('givenRoyalFlush_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(royalFlush)).toBeTruthy());
+});
+
+describe('HandExtractor.isFlush', () => {
+  const arrayContents = jasmine.arrayWithExactContents;
+  it('givenEmpty_whenGetFlush_thenUndefined', () => expect(handExtractor.getFlush(empty)).toBeUndefined());
+  it('givenFlush_whenGetFlush_thenFlush', () => expect(handExtractor.getFlush(flush)).toEqual(arrayContents(flush)));
+  it('givenRoyalFlush_whenGetFlush_thenRoyalFlush', () => expect(handExtractor.getFlush(royalFlush))
+    .toEqual(arrayContents(royalFlush)));
+  it('givenSevenWithFlush_whenGetFlush_thenValidFlush', () => expect(handExtractor.getFlush(sevenWithFlush)).toEqual(
+    arrayContents(sevenWithFlush.filter(card => card.suit !== Suit.Club && card.rank !== 2))));
+  it('givenSevenWithRoyalFlush_whenGetFlush_thenValidFlush', () => expect(handExtractor.getFlush(sevenWithRoyalFlush)).toEqual(
+    arrayContents(sevenWithRoyalFlush.filter(card => card.suit !== Suit.Spade && card.rank !== 9))));
 });

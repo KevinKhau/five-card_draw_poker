@@ -1,3 +1,5 @@
+import {positiveModulo} from './util';
+
 export const rankNumber = 13;
 
 export class Card {
@@ -9,11 +11,30 @@ export class Card {
     this.suit = suit;
   }
 
+  /**
+   * In the given hand, has a card ranked `difference` lower
+   * @param difference Search difference of ranking
+   * @param hand Hand of cards to search in
+   */
+  hasUpper(difference: number, hand: Card[]): boolean {
+    return hand.some(c => difference === positiveModulo(this.rank - c.rank, rankNumber));
+  }
+
+  /**
+   * In the given hand, gets a card ranked `difference` lower
+   * @param difference Search difference of ranking
+   * @param hand Hand of cards to search in
+   * @return The lower-ranked card, or undefined if not found
+   */
+  getLower(difference: number, hand: Card[]): Card {
+    return hand.find(c => difference === positiveModulo(this.rank - c.rank, rankNumber));
+  }
+
 }
 
 export enum Suit {
-  Club = 'Trèfle',
-  Diamond = 'Carreau',
-  Heart = 'Coeur',
-  Spade = 'Pique'
+  Club = 'club',
+  Diamond = 'diamond',
+  Heart = 'heart',
+  Spade = 'spade'
 }
