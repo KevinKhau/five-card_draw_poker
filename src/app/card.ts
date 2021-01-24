@@ -16,7 +16,7 @@ export class Card {
    * @param difference Search difference of ranking
    * @param hand Hand of cards to search in
    */
-  hasUpper(difference: number, hand: Card[]): boolean {
+  hasLower(difference: number, hand: Card[]): boolean {
     return hand.some(c => difference === positiveModulo(this.rank - c.rank, rankNumber));
   }
 

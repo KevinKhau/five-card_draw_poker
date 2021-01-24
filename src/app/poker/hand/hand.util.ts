@@ -51,8 +51,9 @@ export class HandUtil implements FiveCardHandIdentifier {
   isStraight(hand: Card[]): boolean {
     if (!this.hasMinimumCardNumber(hand)) return false;
     return hand
-      .some(card => card.rank < 11 && Array.from({length: this.minimumHandNumber - 1}, (_, i) => i + 1)
-        .every(i => card.hasUpper(i, hand)));
+      .some(card => (card.rank === 1 || card.rank >= this.minimumHandNumber) // start with highest card
+        && Array.from({length: this.minimumHandNumber - 1}, (_, i) => i + 1) // [1, 2, 3, 4]
+          .every(i => card.hasLower(i, hand)));
   }
 
   isFlush(hand: Card[]): boolean {
@@ -88,9 +89,9 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
    */
   getStraight(hand: Card[]): Card[] {
     if (!this.handUtil.hasMinimumCardNumber(hand)) return;
-    hand = this.handUtil.reverseOrder(hand); // Mandatory.
+    hand = this.handUtil.reverseOrder(hand);
     const diffRange: number[] = Array.from({length: this.handUtil.minimumHandNumber - 1}, (_, i) => i + 1); // [1, 2, 3, 4]
-    for (let i = 0; i < hand.length - this.handUtil.minimumHandNumber; i++) {
+    for (let i = 0; i < hand.length - (this.handUtil.minimumHandNumber - 1); i++) {
       let buffer: Card[] = [hand[i]];
       for (const diff of diffRange) {
         const lowerCard = hand[i].getLower(diff, hand);
@@ -133,6 +134,28 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
 
   getFullHouses(hand: Card[]): Array<Card[]> {
     return undefined;
+  }
+
+  getStraightFlush(hand: Card[]): Card[] {
+    if (!this.handUtil.hasMinimumCardNumber(hand)) return;
+    hand = this.handUtil.reverseOrder(hand); // Mandatory.
+    const diffRange: number[] = Array.from({length: this.handUtil.minimumHandNumber - 1}, (_, i) => i + 1); // [1, 2, 3, 4]
+    for (let i = 0; i < hand.length - (this.handUtil.minimumHandNumber - 1); i++) {
+      let buffer: Card[] = [hand[i]];
+      for (const diff of diffRange) {
+        const lowerCardWithSameSuit = hand.find(c => c.suit === hand[i].suit && diff === positiveModulo(hand[i].rank - c.rank, rankNumber));
+        console.log({buffer, lowerCardWithSameSuit, hand});
+        if (lowerCardWithSameSuit) {
+          buffer.push(lowerCardWithSameSuit);
+        } else {
+          buffer = [];
+          break;
+        }
+      }
+      if (buffer.length >= this.handUtil.minimumHandNumber) {
+        return buffer;
+      }
+    }
   }
 
 }

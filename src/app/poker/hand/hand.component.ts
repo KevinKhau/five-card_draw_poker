@@ -78,7 +78,6 @@ export class HandComponent implements OnInit, AfterContentInit {
     this.deck$.pipe(first((deck: Card[]) => deck && !!deck.length)).subscribe(deck => {
       setTimeout(() => {
         this.cards.push(...this.pickCards(n, deck));
-        console.log(this.handExtractor.getStraight(this.cards));
         this.deckStore.dispatch(removeCards({cards: this.cards}));
       });
     });
