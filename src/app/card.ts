@@ -1,3 +1,5 @@
+export const rankNumber = 13;
+
 export class Card {
   rank: number;
   suit: Suit;

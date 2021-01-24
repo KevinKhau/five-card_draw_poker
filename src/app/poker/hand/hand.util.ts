@@ -1,4 +1,4 @@
-import {Card, Suit} from '../../card';
+import {Card, rankNumber, Suit} from '../../card';
 
 export class HandUtil {
 
@@ -10,6 +10,11 @@ export class HandUtil {
 
   static isStraight(hand: Card[]): boolean {
     if (hand.length < 5) return false;
-    return undefined;
+    return hand.some(card => card.rank < 11 && [1, 2, 3, 4].every(i => this.hasUpper(card, i, hand)));
+  }
+
+  private static hasUpper(card: Card, difference: number, hand: Card[]): boolean {
+    const positiveModulo = (n, mod) => (n % mod + mod) % mod;
+    return hand.some(c => difference === positiveModulo(c.rank - card.rank, rankNumber) );
   }
 }

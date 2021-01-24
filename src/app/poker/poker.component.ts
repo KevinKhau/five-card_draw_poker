@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Card, Suit} from '../card';
+import {Card, rankNumber, Suit} from '../card';
 import {Store} from '@ngrx/store';
 import {set} from './poker.action';
 import {Observable} from 'rxjs';
@@ -38,7 +38,7 @@ export class PokerComponent implements OnInit {
 
   buildDeck(): void {
     const deck: Card[] = [];
-    const ranks = Array.from({length: 13}, (_, i) => i + 1);
+    const ranks = Array.from({length: rankNumber}, (_, i) => i + 1);
     Object.keys(Suit).forEach((suit: Suit) => {
       ranks.forEach(rank => {
         deck.push(new Card(rank, suit));

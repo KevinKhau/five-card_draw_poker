@@ -1,5 +1,7 @@
 <h2>Hand</h2>
 <p *ngIf="HandUtil.isFlush(cards)">Vous avez une couleur !</p>
+<p *ngIf="HandUtil.isStraight(cards)">Vous avez une suite !</p>
+
 <ul>
   <li
     *ngFor="let card of cards" class="{{card.suit}}"
