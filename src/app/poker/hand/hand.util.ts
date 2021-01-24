@@ -8,4 +8,8 @@ export class HandUtil {
     return hand.every(c => c.suit === suit);
   }
 
+  static isStraight(hand: Card[]): boolean {
+    if (hand.length < 5) return false;
+    return undefined;
+  }
 }
