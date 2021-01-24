@@ -21,18 +21,20 @@ const straightFlush = [new Card(6, Suit.Diamond), new Card(8, Suit.Diamond), new
 const royalFlush = [new Card(12, Suit.Diamond), new Card(13, Suit.Diamond), new Card(10, Suit.Diamond), new Card(11, Suit.Diamond),
   new Card(1, Suit.Diamond)];
 
+const handUtil = new HandUtil();
+
 describe('HandUtil.isFlush', () => {
-  it('givenEmpty_whenIsFlush_thenFalse', () => expect(HandUtil.isFlush(empty)).toBeFalsy);
-  it('givenStraight_whenIsFlush_thenFalse', () => expect(HandUtil.isFlush(straight)).toBeFalsy());
-  it('givenFlush_whenIsFlush_thenTrue', () => expect(HandUtil.isFlush(flush)).toBeTruthy());
+  it('givenEmpty_whenIsFlush_thenFalse', () => expect(handUtil.isFlush(empty)).toBeFalsy());
+  it('givenStraight_whenIsFlush_thenFalse', () => expect(handUtil.isFlush(straight)).toBeFalsy());
+  it('givenFlush_whenIsFlush_thenTrue', () => expect(handUtil.isFlush(flush)).toBeTruthy());
 });
 
-fdescribe('HandUtil.isStraight', () => {
-  it('givenEmpty_whenIsStraight_thenFalse', () => expect(HandUtil.isStraight(empty)).toBeFalsy());
-  it('givenHighCard_whenIsStraight_thenFalse', () => expect(HandUtil.isStraight(highCard)).toBeFalsy());
-  it('givenWheelStraight_whenIsStraight_thenFalse', () => expect(HandUtil.isStraight(wheelStraight)).toBeFalsy());
-  it('givenStraight_whenIsStraight_thenTrue', () => expect(HandUtil.isStraight(straight)).toBeTruthy());
-  it('givenFlush_whenIsStraight_thenFalse', () => expect(HandUtil.isStraight(flush)).toBeFalsy());
-  it('givenStraightFlush_whenIsStraight_thenTrue', () => expect(HandUtil.isStraight(straightFlush)).toBeTruthy());
-  it('givenRoyalFlush_whenIsStraight_thenTrue', () => expect(HandUtil.isStraight(royalFlush)).toBeTruthy());
+describe('HandUtil.isStraight', () => {
+  it('givenEmpty_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(empty)).toBeFalsy());
+  it('givenHighCard_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(highCard)).toBeFalsy());
+  it('givenWheelStraight_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(wheelStraight)).toBeFalsy());
+  it('givenStraight_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(straight)).toBeTruthy());
+  it('givenFlush_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(flush)).toBeFalsy());
+  it('givenStraightFlush_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(straightFlush)).toBeTruthy());
+  it('givenRoyalFlush_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(royalFlush)).toBeTruthy());
 });

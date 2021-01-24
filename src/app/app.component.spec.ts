@@ -1,13 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import {initialState} from './poker/poker.reducer';
+import {MockStore, provideMockStore} from '@ngrx/store/testing';
 
 describe('AppComponent', () => {
+  let store: MockStore;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
         AppComponent
       ],
+      providers: [
+        provideMockStore({ initialState }),
+      ]
     }).compileComponents();
+    store = TestBed.inject(MockStore);
   });
 
   it('should create the app', () => {
@@ -22,10 +29,4 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('web');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('web app is running!');
-  });
 });

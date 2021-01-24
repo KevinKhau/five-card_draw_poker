@@ -15,13 +15,13 @@ export class HandComponent implements OnInit, AfterContentInit {
 
   constructor(
     private deckStore: Store<{ deck: Card[] }>,
+    public handUtil: HandUtil = new HandUtil()
   ) {
     this.deck$ = this.deckStore.select('deck');
   }
 
   private deck$: Observable<Card[]>;
   private readonly HAND_NUMBER = 5;
-  HandUtil = HandUtil;
 
   @Input()
   cards: Card[] = [];
