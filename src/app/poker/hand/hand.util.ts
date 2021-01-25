@@ -41,8 +41,7 @@ export class HandUtil implements FiveCardHandFinder {
 
   /** Immutable */
   orderByRank(hand: Card[]): Card[] {
-    const transform = (card: Card): number => positiveModulo(card.rank - 2, rankNumber);
-    return [...hand].sort((c1, c2) => transform(c1) - transform(c2));
+    return [...hand].sort((c1, c2) => c1.compareRank(c2));
   }
   reverseOrder(hand: Card[]): Card[] {
     return [...this.orderByRank(hand)].reverse();
@@ -64,6 +63,7 @@ export class HandUtil implements FiveCardHandFinder {
   isFullHouse(hand: Card[]): boolean {
     throw new Error('Method not implemented.');
   }
+
   isFourOfAKind(hand: Card[]): boolean {
     throw new Error('Method not implemented.');
   }
@@ -103,7 +103,9 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
         }
         return acc;
       }, {});
-      const nSameRank = Object.keys(cardsGroupedByRank).find(rank => cardsGroupedByRank[rank].length >= n);
+      const nSameRank = Object.keys(cardsGroupedByRank)
+        .sort((r1, r2) => +r2 - +r1)
+        .find(rank => cardsGroupedByRank[rank].length >= n);
       if (nSameRank) return cardsGroupedByRank[nSameRank].splice(0, n);
     };
   }
@@ -146,7 +148,12 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
   }
 
   getFullHouse(hand: Card[]): Card[] {
-    return [];
+    const trips = this.getThreeOfAKind(hand);
+    if (!trips) return;
+    hand = hand.filter(card => !trips.includes(card));
+    const pair = this.getTwoOfAKind(hand);
+    if (!pair)  return;
+    return [...trips, ...pair];
   }
 
   getStraightFlush(hand: Card[]): Card[] {
