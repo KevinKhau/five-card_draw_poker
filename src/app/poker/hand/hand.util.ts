@@ -30,9 +30,15 @@ export interface FiveCardHandExtractor {
   getStraightFlush(hand: Card[]): Card[];
   getFiveOfAKind(hand: Card[]): Card[];
   getThreeOfAKind(hand: Card[]): Card[];
-  getTwoPairs(hand: Card[]): Card[];
+  getTwoPair(hand: Card[]): Card[];
   getPair(hand: Card[]): Card[];
-  getHighCard(hand: Card[]): Card[];
+
+  /**
+   * Returns rank-sorted hand.
+   * @param hand input hand
+   * @param n the number of cards in the returned hand
+   */
+  getHighCard(hand: Card[], n: number): Card[];
 }
 
 @Injectable({providedIn: 'root'})
@@ -87,18 +93,19 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
 
   handUtil = new HandUtil();
 
-  getPair = this.getSameOfAKind(2);
-  getThreeOfAKind = this.getSameOfAKind(3);
-  getFourOfAKind = this.getSameOfAKind(4);
-  getFiveOfAKind = this.getSameOfAKind(5);
+  getPair = this.getSameOfAKind(2, this.handUtil.minimumHandNumber);
+  getThreeOfAKind = this.getSameOfAKind(3, this.handUtil.minimumHandNumber);
+  getFourOfAKind = this.getSameOfAKind(4, this.handUtil.minimumHandNumber);
+  getFiveOfAKind = this.getSameOfAKind(5, this.handUtil.minimumHandNumber);
 
   /**
-   * Generates a function with required number of equal-rank cards
+   * Generates a function with required number of best same-rank cards
    * @param n required number of equal-rank cards
+   * @param requiredNumber required number of returned cards, which will have the best rank
    */
-  private getSameOfAKind(n: number): (hand: Card[], getHighest?: boolean) => Card[] {
-    return (hand: Card[], getHighest?: boolean) => {
-      if (hand.length < n)  return;
+  private getSameOfAKind(n: number, requiredNumber?: number): (hand: Card[], nRequired?: number) => Card[] {
+    return (hand: Card[], nRequired = requiredNumber) => {
+      if (hand.length < requiredNumber)  return;
       const cardsGroupedByRank = hand.reduce((acc, card: Card) => {
         if (acc[card.rank]) {
           acc[card.rank].push(card);
@@ -109,10 +116,12 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
       }, {});
       const nSameRanks = Object.keys(cardsGroupedByRank).filter(rank => cardsGroupedByRank[rank].length >= n).map(v => Number(v));
       if (!nSameRanks.length) return;
-      const nSameRank = (getHighest !== false) ?
-        nSameRanks.reduce((acc, val) => Card.relativeOperation(acc) > Card.relativeOperation(val) ? acc : val) :
-        nSameRanks[0];
-      return cardsGroupedByRank[nSameRank].splice(0, n);
+      const nSameRank = nSameRanks.reduce((acc, val) => Card.relativeOperation(acc) > Card.relativeOperation(val) ? acc : val);
+      const result = cardsGroupedByRank[nSameRank].slice(0, n);
+
+      const handWithoutResult = hand.filter(card => !result.includes(card));
+      const diff = nRequired - result.length;
+      return diff ? result.concat(this.handUtil.reverseOrder(handWithoutResult).slice(0, diff)) : result;
     };
   }
 
@@ -148,17 +157,17 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
       if (!isNaN(Number(Suit[key]))) continue;
       const filteredHand = hand.filter(card => card.suit === Suit[key]);
       if (filteredHand.length >= this.handUtil.minimumHandNumber) {
-        return filteredHand.splice(0, 5);
+        return filteredHand.slice(0, 5);
       }
     }
   }
 
   getFullHouse(hand: Card[]): Card[] {
     if (hand.length < 5) return;
-    const trips = this.getThreeOfAKind(hand);
+    const trips = this.getSameOfAKind(3, 3)(hand);
     if (!trips) return;
     hand = hand.filter(card => !trips.includes(card));
-    const pair = this.getPair(hand);
+    const pair = this.getSameOfAKind(2, 2)(hand);
     if (!pair)  return;
     return [...trips, ...pair];
   }
@@ -184,18 +193,20 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
     }
   }
 
-  getTwoPairs(hand: Card[]): Card[] {
+  getTwoPair(hand: Card[]): Card[] {
     if (hand.length < 4) return;
-    const highestRankedPair = this.getPair(hand);
+    const highestRankedPair = this.getSameOfAKind(2, 2)(hand);
     if (!highestRankedPair) return;
     hand = hand.filter(card => !highestRankedPair.includes(card));
-    const lowestRankingPair = this.getPair(hand);
-    if (!lowestRankingPair)  return;
-    return [...highestRankedPair, ...lowestRankingPair, ];
+    const lowestRankingPairAndKicker = this.getSameOfAKind(2, this.handUtil.minimumHandNumber - 2)(hand);
+    if (!lowestRankingPairAndKicker)  return;
+    return [...highestRankedPair, ...lowestRankingPairAndKicker];
   }
 
-  getHighCard(hand: Card[]): Card[] {
-    return undefined;
+  getHighCard(hand: Card[], n: number): Card[] {
+    if (!hand.length) return;
+    return [...hand].sort((c1, c2) => c1.compareRank(c2))
+      .slice(0, Math.min(hand.length, n));
   }
 
 }

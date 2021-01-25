@@ -71,7 +71,8 @@ export class HandComponent implements OnInit, AfterContentInit {
     return draw;
   }
   pickCard(deck: Card[]): Card {
-    return [...deck].splice(HandComponent.getRandomInt(0, deck.length), 1)[0];
+    const index = HandComponent.getRandomInt(0, deck.length);
+    return deck.slice(index, index + 1)[0];
   }
 
   private drawCards(n: number): void {

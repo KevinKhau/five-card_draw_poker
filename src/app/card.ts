@@ -7,9 +7,11 @@ export class Card {
   constructor(rank: number, suit: Suit) {
     this.rank = rank;
     this.suit = suit;
+    this.id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
   }
   rank: number;
   suit: Suit;
+  id?: string;
 
   /**
    * Operation used to sort cards based on their actual rank strength.
