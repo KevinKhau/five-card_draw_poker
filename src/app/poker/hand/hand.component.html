@@ -5,6 +5,8 @@
 <p *ngIf="handExtractor.getTwoOfAKind(cards)">Vous avez un brelan !</p>
 <p *ngIf="handExtractor.getThreeOfAKind(cards)">Vous avez un brelan !</p>
 <p *ngIf="handExtractor.getFourOfAKind(cards)">Vous avez un carré !</p>
+<p *ngIf="handExtractor.getFullHouse(cards)">Vous avez un full ! {{ handExtractor.getFullHouse(cards) | json}}</p>
+
 
 <ul>
   <li

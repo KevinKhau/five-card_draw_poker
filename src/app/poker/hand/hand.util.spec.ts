@@ -35,6 +35,10 @@ const sevenWithFourOfAKind = [new Card(6, Suit.Diamond), new Card(4, Suit.Spade)
   new Card(4, Suit.Diamond), new Card(4, Suit.Club), new Card(7, Suit.Heart)];
 const sevenWithFiveOfAKind = [new Card(4, Suit.Diamond), new Card(4, Suit.Spade), new Card(7, Suit.Heart), new Card(4, Suit.Heart),
   new Card(4, Suit.Diamond), new Card(4, Suit.Club), new Card(13, Suit.Diamond)];
+const sevenWithAFullHouse = [new Card(12, Suit.Diamond), new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(4, Suit.Heart),
+  new Card(4, Suit.Diamond), new Card(12, Suit.Club), new Card(6, Suit.Diamond)];
+const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(1, Suit.Diamond), new Card(4, Suit.Spade), new Card(4, Suit.Heart),
+  new Card(4, Suit.Diamond), new Card(1, Suit.Club), new Card(6, Suit.Diamond), new Card(1, Suit.Spade)];
 
 const handUtil = new HandUtil();
 const handExtractor = new FiveCardHandExtractorImpl();
@@ -90,7 +94,28 @@ describe('HandExtractor.getFourOfAKind', () => {
   it('givenThreeOfAKind_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(threeOfAKind)).toBeUndefined());
   it('givenFourOfAKind_whenGetFourOfAKind_thenFourOfAKind', () => expect(handExtractor.getFourOfAKind(fourOfAKind))
     .toEqual(arrayContents(fourOfAKind.filter(card => card.rank === 4))));
-  it('givenFiveOfAKind_whenGetFourOfAKind_thenFourAKind', () => expect(handExtractor.getFourOfAKind(fiveOfAKind))
-    .toContain(jasmine.arrayContaining(fourOfAKind.filter(card => card.rank === 4))));
-  it('givenEmpty_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(empty)).toBeUndefined());
+  it('givenFiveOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
+    expect(handExtractor.getFourOfAKind(fiveOfAKind).map(card => card.rank))
+      .toEqual([4, 4, 4, 4]));
+  it('givenSevenWithFourOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
+    expect(handExtractor.getFourOfAKind(sevenWithFourOfAKind))
+      .toEqual(arrayContents(sevenWithFourOfAKind.filter(card => card.rank === 4))));
+  it('givenSevenWithFiveOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
+    expect(handExtractor.getFourOfAKind(sevenWithFiveOfAKind).map(card => card.rank))
+      .toEqual([4, 4, 4, 4]));
+});
+
+describe('HandExtractor.getFullHouse', () => {
+  it('givenEmpty_whenGetFullHouse_thenUndefined', () => expect(handExtractor.getFullHouse(empty)).toBeUndefined());
+  it('givenPair_whenGetFullHouse_thenUndefined', () => expect(handExtractor.getFullHouse(pair)).toBeUndefined());
+  it('givenThreeOfAKind_whenGetFullHouse_thenUndefined', () => expect(handExtractor.getFullHouse(threeOfAKind)).toBeUndefined());
+  it('givenFullHouse_whenGetFullHouse_thenFullHouse', () => expect(handExtractor.getFullHouse(fullHouse))
+    .toEqual(arrayContents(fullHouse)));
+  it('givenSevenWithFullHouse_whenGetFullHouse_thenFullHouse', () =>
+    expect(handExtractor.getFullHouse(sevenWithAFullHouse))
+      .toEqual(arrayContents(fullHouse)));
+  it('givenEightWithInterlopingFullHouses_whenGetFullHouse_thenBestFullHouse', () =>
+    expect(handExtractor.getFullHouse(eightWithInterlopingFullHouses))
+      .toEqual(arrayContents(eightWithInterlopingFullHouses.filter(card => card.rank === 1 || card.rank === 6))));
+
 });
