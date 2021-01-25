@@ -1,6 +1,10 @@
 <h2>Hand</h2>
-<p *ngIf="handUtil.isFlush(cards)">Vous avez une couleur !</p>
+<!-- *ngIf() with method: remove -->
 <p *ngIf="handUtil.isStraight(cards)">Vous avez une suite !</p>
+<p *ngIf="handUtil.isFlush(cards)">Vous avez une couleur !</p>
+<p *ngIf="handExtractor.getTwoOfAKind(cards)">Vous avez un brelan !</p>
+<p *ngIf="handExtractor.getThreeOfAKind(cards)">Vous avez un brelan !</p>
+<p *ngIf="handExtractor.getFourOfAKind(cards)">Vous avez un carré !</p>
 
 <ul>
   <li

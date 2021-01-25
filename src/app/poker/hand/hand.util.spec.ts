@@ -22,7 +22,8 @@ const straightFlush = [new Card(6, Suit.Diamond), new Card(8, Suit.Diamond), new
   new Card(5, Suit.Diamond)];
 const royalFlush = [new Card(12, Suit.Diamond), new Card(13, Suit.Diamond), new Card(10, Suit.Diamond), new Card(11, Suit.Diamond),
   new Card(1, Suit.Diamond)];
-
+const fiveOfAKind = [new Card(4, Suit.Diamond), new Card(4, Suit.Spade), new Card(4, Suit.Heart), new Card(4, Suit.Diamond),
+  new Card(4, Suit.Club)];
 
 const sevenWithStraight = [new Card(1, Suit.Spade), new Card(5, Suit.Club), new Card(8, Suit.Club), new Card(6, Suit.Heart),
   new Card(9, Suit.Spade), new Card(2, Suit.Club), new Card(7, Suit.Diamond)];
@@ -30,6 +31,10 @@ const sevenWithFlush = [new Card(1, Suit.Heart), new Card(10, Suit.Club), new Ca
   new Card(9, Suit.Heart), new Card(2, Suit.Heart), new Card(10, Suit.Heart)];
 const sevenWithRoyalFlush = [new Card(10, Suit.Spade), new Card(12, Suit.Diamond), new Card(13, Suit.Diamond),
   new Card(10, Suit.Diamond), new Card(9, Suit.Diamond), new Card(11, Suit.Diamond), new Card(1, Suit.Diamond)];
+const sevenWithFourOfAKind = [new Card(6, Suit.Diamond), new Card(4, Suit.Spade), new Card(4, Suit.Heart), new Card(12, Suit.Diamond),
+  new Card(4, Suit.Diamond), new Card(4, Suit.Club), new Card(7, Suit.Heart)];
+const sevenWithFiveOfAKind = [new Card(4, Suit.Diamond), new Card(4, Suit.Spade), new Card(7, Suit.Heart), new Card(4, Suit.Heart),
+  new Card(4, Suit.Diamond), new Card(4, Suit.Club), new Card(13, Suit.Diamond)];
 
 const handUtil = new HandUtil();
 const handExtractor = new FiveCardHandExtractorImpl();
@@ -78,5 +83,14 @@ describe('HandExtractor.getStraightFlush', () => {
   it('givenSevenWithRoyalFlush_whenGetStraightFlush_thenRoyalFlush', () =>
     expect(handExtractor.getStraightFlush(sevenWithRoyalFlush))
       .toEqual(arrayContents(sevenWithRoyalFlush.filter(card => card.suit !== Suit.Spade && card.rank !== 9))));
+});
 
+describe('HandExtractor.getFourOfAKind', () => {
+  it('givenEmpty_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(empty)).toBeUndefined());
+  it('givenThreeOfAKind_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(threeOfAKind)).toBeUndefined());
+  it('givenFourOfAKind_whenGetFourOfAKind_thenFourOfAKind', () => expect(handExtractor.getFourOfAKind(fourOfAKind))
+    .toEqual(arrayContents(fourOfAKind.filter(card => card.rank === 4))));
+  it('givenFiveOfAKind_whenGetFourOfAKind_thenFourAKind', () => expect(handExtractor.getFourOfAKind(fiveOfAKind))
+    .toContain(jasmine.arrayContaining(fourOfAKind.filter(card => card.rank === 4))));
+  it('givenEmpty_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(empty)).toBeUndefined());
 });

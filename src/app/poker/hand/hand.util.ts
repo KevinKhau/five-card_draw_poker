@@ -13,7 +13,7 @@ export interface HandComparator {
   getHighCardInFiveCardHand(hands: Array<Card[]>): Card;
 }
 
-export interface FiveCardHandIdentifier {
+export interface FiveCardHandFinder {
   isStraight(hand: Card[]): boolean;
   isFlush(hand: Card[]): boolean;
   isFullHouse(hand: Card[]): boolean;
@@ -24,15 +24,15 @@ export interface FiveCardHandIdentifier {
 
 export interface FiveCardHandExtractor {
   getStraight(hand: Card[]): Card[];
-  getStraights(hand: Card[]): Array<Card[]>;
   getFlush(hand: Card[]): Card[];
-  getFlushes(hand: Card[]): Array<Card[]>;
   getFullHouse(hand: Card[]): Card[];
-  getFullHouses(hand: Card[]): Array<Card[]>;
+  getFourOfAKind(hand: Card[]): Card[];
+  getStraightFlush(hand: Card[]): Card[];
+  getFiveOfAKind(hand: Card[]): Card[];
 }
 
 @Injectable({providedIn: 'root'})
-export class HandUtil implements FiveCardHandIdentifier {
+export class HandUtil implements FiveCardHandFinder {
   readonly minimumHandNumber = 5;
 
   hasMinimumCardNumber(hand: Card[]): boolean {
@@ -83,6 +83,31 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
 
   handUtil = new HandUtil();
 
+  getTwoOfAKind = this.getSameOfAKind(2);
+  getThreeOfAKind = this.getSameOfAKind(3);
+  getFourOfAKind = this.getSameOfAKind(4);
+  getFiveOfAKind = this.getSameOfAKind(5);
+
+  /**
+   * Generates a function with required number of equal-rank cards
+   * @param n required number of equal-rank cards
+   */
+  private getSameOfAKind(n: number): (hand: Card[]) => Card[] {
+    return (hand: Card[]) => {
+      if (hand.length < n)  return;
+      const cardsGroupedByRank = hand.reduce((acc, card: Card) => {
+        if (acc[card.rank]) {
+          acc[card.rank].push(card);
+        } else {
+          acc[card.rank] = [card];
+        }
+        return acc;
+      }, {});
+      const nSameRank = Object.keys(cardsGroupedByRank).find(rank => cardsGroupedByRank[rank].length >= n);
+      if (nSameRank) return cardsGroupedByRank[nSameRank].splice(0, n);
+    };
+  }
+
   /**
    * Extracts the straight with the highest card.
    * @param hand A hand of any number of cards.
@@ -108,10 +133,6 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
     }
   }
 
-  getStraights(hand: Card[]): Array<Card[]> {
-    return undefined;
-  }
-
   getFlush(hand: Card[]): Card[] {
     if (!this.handUtil.hasMinimumCardNumber(hand)) return;
     hand = this.handUtil.reverseOrder(hand);
@@ -124,16 +145,8 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
     }
   }
 
-  getFlushes(hand: Card[]): Array<Card[]> {
-    return undefined;
-  }
-
   getFullHouse(hand: Card[]): Card[] {
     return [];
-  }
-
-  getFullHouses(hand: Card[]): Array<Card[]> {
-    return undefined;
   }
 
   getStraightFlush(hand: Card[]): Card[] {
@@ -144,7 +157,6 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
       let buffer: Card[] = [hand[i]];
       for (const diff of diffRange) {
         const lowerCardWithSameSuit = hand.find(c => c.suit === hand[i].suit && diff === positiveModulo(hand[i].rank - c.rank, rankNumber));
-        console.log({buffer, lowerCardWithSameSuit, hand});
         if (lowerCardWithSameSuit) {
           buffer.push(lowerCardWithSameSuit);
         } else {
