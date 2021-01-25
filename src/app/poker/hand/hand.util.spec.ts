@@ -37,7 +37,7 @@ const sevenWithFiveOfAKind = [new Card(4, Suit.Diamond), new Card(4, Suit.Spade)
   new Card(4, Suit.Diamond), new Card(4, Suit.Club), new Card(13, Suit.Diamond)];
 const sevenWithAFullHouse = [new Card(12, Suit.Diamond), new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(4, Suit.Heart),
   new Card(4, Suit.Diamond), new Card(12, Suit.Club), new Card(6, Suit.Diamond)];
-const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(1, Suit.Diamond), new Card(4, Suit.Spade), new Card(4, Suit.Heart),
+const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(1, Suit.Diamond), new Card(4, Suit.Heart),
   new Card(4, Suit.Diamond), new Card(1, Suit.Club), new Card(6, Suit.Diamond), new Card(1, Suit.Spade)];
 
 const handUtil = new HandUtil();
@@ -115,7 +115,7 @@ describe('HandExtractor.getFullHouse', () => {
     expect(handExtractor.getFullHouse(sevenWithAFullHouse))
       .toEqual(arrayContents(fullHouse)));
   it('givenEightWithInterlopingFullHouses_whenGetFullHouse_thenBestFullHouse', () =>
-    expect(handExtractor.getFullHouse(eightWithInterlopingFullHouses))
-      .toEqual(arrayContents(eightWithInterlopingFullHouses.filter(card => card.rank === 1 || card.rank === 6))));
+    expect(handExtractor.getFullHouse(eightWithInterlopingFullHouses).map(card => card.rank))
+      .toEqual(arrayContents([1, 1, 1, 4, 4])));
 
 });

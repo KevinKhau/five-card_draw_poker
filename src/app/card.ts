@@ -3,13 +3,19 @@ import {positiveModulo} from './util';
 export const rankNumber = 13;
 
 export class Card {
-  rank: number;
-  suit: Suit;
 
   constructor(rank: number, suit: Suit) {
     this.rank = rank;
     this.suit = suit;
   }
+  rank: number;
+  suit: Suit;
+
+  /**
+   * Operation used to sort cards based on their actual rank strength.
+   * @param n card's technical rank
+   */
+  static relativeOperation = n => positiveModulo(n - 2, rankNumber);
 
   /**
    * In the given hand, has a card ranked `difference` lower
@@ -46,7 +52,7 @@ export class Card {
    * In poker, the Ace is ranked the highest, so for a card ranked 1, this method returns 12. 2 returns 0, and King 11.
    */
   relativeRanking(): number {
-    return positiveModulo(this.rank - 2, rankNumber);
+    return Card.relativeOperation(this.rank);
   }
 
 }
