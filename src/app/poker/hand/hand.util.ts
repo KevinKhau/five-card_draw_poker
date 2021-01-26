@@ -206,7 +206,14 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
   getHighCard(hand: Card[], n: number): Card[] {
     if (!hand.length) return;
     return [...hand].sort((c1, c2) => c1.compareRank(c2))
-      .slice(0, Math.min(hand.length, n));
+      .slice(0, n);
+  }
+
+  getKicker(hand: Card[], combination: Card[], wholeHandLength: number): Card[] {
+    if (hand.length >= wholeHandLength) return;
+    const handWithoutResult = hand.filter(card => !combination.includes(card));
+    const diff = wholeHandLength - hand.length;
+    return diff ? hand.concat(this.handUtil.reverseOrder(handWithoutResult).slice(0, diff)) : hand;
   }
 
 }
