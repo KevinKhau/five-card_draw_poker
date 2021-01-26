@@ -22,7 +22,8 @@ export interface FiveCardHandFinder {
   isFiveOfAKind(hand: Card[]): boolean;
 }
 
-export interface FiveCardHandExtractor {
+export interface HandExtractor {
+  getBest(hand: Card[]): Card[];
   getStraight(hand: Card[]): Card[];
   getFlush(hand: Card[]): Card[];
   getFullHouse(hand: Card[]): Card[];
@@ -32,13 +33,14 @@ export interface FiveCardHandExtractor {
   getThreeOfAKind(hand: Card[]): Card[];
   getTwoPair(hand: Card[]): Card[];
   getPair(hand: Card[]): Card[];
+  getKicker(hand: Card[], others: Card[], requiredHandLength: number): Card[];
 
   /**
    * Returns rank-sorted hand.
    * @param hand input hand
    * @param n the number of cards in the returned hand
    */
-  getHighCard(hand: Card[], n: number): Card[];
+  getHighCards(hand: Card[], n: number): Card[];
 }
 
 @Injectable({providedIn: 'root'})
@@ -55,6 +57,15 @@ export class HandUtil implements FiveCardHandFinder {
   }
   reverseOrder(hand: Card[]): Card[] {
     return [...this.orderByRank(hand)].reverse();
+  }
+
+  /**
+   * Returns a array with removed cards
+   * @param hand Input hand
+   * @param cards Cards to be removed
+   */
+  remove(hand: Card[], cards: Card[]): Card[] {
+    return hand.filter(card => !cards.includes(card));
   }
 
   isStraight(hand: Card[]): boolean {
@@ -88,24 +99,47 @@ export class HandUtil implements FiveCardHandFinder {
 
 }
 
+/**
+ * Returns cards strictly required the for the asked hand.
+ * If the input hand has two pairs, #getTwoPair returns 4 cards, without the kicker.
+ */
 @Injectable({providedIn: 'root'})
-export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
+export class HandExtractorImpl implements HandExtractor {
 
   handUtil = new HandUtil();
 
-  getPair = this.getSameOfAKind(2, this.handUtil.minimumHandNumber);
-  getThreeOfAKind = this.getSameOfAKind(3, this.handUtil.minimumHandNumber);
-  getFourOfAKind = this.getSameOfAKind(4, this.handUtil.minimumHandNumber);
-  getFiveOfAKind = this.getSameOfAKind(5, this.handUtil.minimumHandNumber);
+  getPair = this.getSameOfAKind(2);
+  getThreeOfAKind = this.getSameOfAKind(3);
+  getFourOfAKind = this.getSameOfAKind(4);
+  getFiveOfAKind = this.getSameOfAKind(5);
+
+  getBest(hand: Card[]): Card[] {
+    const strictHandF = [
+      this.getFiveOfAKind,
+      this.getStraightFlush,
+      this.getFourOfAKind,
+      this.getFullHouse,
+      this.getFlush,
+      this.getStraight,
+      this.getThreeOfAKind,
+      this.getTwoPair,
+      this.getPair,
+      this.getHighCards
+    ];
+
+    for (const handExtractor of strictHandF) {
+      const result = handExtractor.bind(this)(hand, this.handUtil.minimumHandNumber);
+      if (result)  return result;
+    }
+  }
 
   /**
    * Generates a function with required number of best same-rank cards
    * @param n required number of equal-rank cards
-   * @param requiredNumber required number of returned cards, which will have the best rank
    */
-  private getSameOfAKind(n: number, requiredNumber?: number): (hand: Card[], nRequired?: number) => Card[] {
-    return (hand: Card[], nRequired = requiredNumber) => {
-      if (hand.length < requiredNumber)  return;
+  private getSameOfAKind(n: number): (hand: Card[]) => Card[] {
+    return (hand: Card[]) => {
+      if (hand.length < n)  return;
       const cardsGroupedByRank = hand.reduce((acc, card: Card) => {
         if (acc[card.rank]) {
           acc[card.rank].push(card);
@@ -117,11 +151,7 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
       const nSameRanks = Object.keys(cardsGroupedByRank).filter(rank => cardsGroupedByRank[rank].length >= n).map(v => Number(v));
       if (!nSameRanks.length) return;
       const nSameRank = nSameRanks.reduce((acc, val) => Card.relativeOperation(acc) > Card.relativeOperation(val) ? acc : val);
-      const result = cardsGroupedByRank[nSameRank].slice(0, n);
-
-      const handWithoutResult = hand.filter(card => !result.includes(card));
-      const diff = nRequired - result.length;
-      return diff ? result.concat(this.handUtil.reverseOrder(handWithoutResult).slice(0, diff)) : result;
+      return cardsGroupedByRank[nSameRank].slice(0, n);
     };
   }
 
@@ -164,10 +194,9 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
 
   getFullHouse(hand: Card[]): Card[] {
     if (hand.length < 5) return;
-    const trips = this.getSameOfAKind(3, 3)(hand);
+    const trips = this.getThreeOfAKind(hand);
     if (!trips) return;
-    hand = hand.filter(card => !trips.includes(card));
-    const pair = this.getSameOfAKind(2, 2)(hand);
+    const pair = this.getPair(this.handUtil.remove(hand, trips));
     if (!pair)  return;
     return [...trips, ...pair];
   }
@@ -195,25 +224,22 @@ export class FiveCardHandExtractorImpl implements FiveCardHandExtractor {
 
   getTwoPair(hand: Card[]): Card[] {
     if (hand.length < 4) return;
-    const highestRankedPair = this.getSameOfAKind(2, 2)(hand);
+    const highestRankedPair = this.getPair(hand);
     if (!highestRankedPair) return;
-    hand = hand.filter(card => !highestRankedPair.includes(card));
-    const lowestRankingPairAndKicker = this.getSameOfAKind(2, this.handUtil.minimumHandNumber - 2)(hand);
-    if (!lowestRankingPairAndKicker)  return;
-    return [...highestRankedPair, ...lowestRankingPairAndKicker];
+    const lowestRankingPair = this.getPair(this.handUtil.remove(hand, highestRankedPair));
+    if (!lowestRankingPair) return;
+    return [...highestRankedPair, ...lowestRankingPair];
   }
 
-  getHighCard(hand: Card[], n: number): Card[] {
+  getHighCards(hand: Card[], n: number): Card[] {
     if (!hand.length) return;
-    return [...hand].sort((c1, c2) => c1.compareRank(c2))
-      .slice(0, n);
+    return this.handUtil.reverseOrder(hand).slice(0, n || hand.length);
   }
 
-  getKicker(hand: Card[], combination: Card[], wholeHandLength: number): Card[] {
-    if (hand.length >= wholeHandLength) return;
-    const handWithoutResult = hand.filter(card => !combination.includes(card));
-    const diff = wholeHandLength - hand.length;
-    return diff ? hand.concat(this.handUtil.reverseOrder(handWithoutResult).slice(0, diff)) : hand;
+  getKicker(hand: Card[], combination: Card[], requiredHandLength: number): Card[] {
+    if (hand.length < requiredHandLength) return;
+    const withoutCombination = this.handUtil.remove(hand, combination);
+    return this.getHighCards(withoutCombination, requiredHandLength - combination.length);
   }
 
 }

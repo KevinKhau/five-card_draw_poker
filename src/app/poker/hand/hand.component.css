@@ -1,3 +1,8 @@
+:host ::ng-deep .li {
+  box-shadow: 2px 2px #aaa;
+  width: 300px;
+}
+
 .roll {
   width: 300px;
   height: 30px;
@@ -5,4 +10,8 @@
 
 .marked {
   background: beige;
+}
+
+.inBestHand {
+  background: greenyellow;
 }

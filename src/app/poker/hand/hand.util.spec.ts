@@ -1,4 +1,4 @@
-import {FiveCardHandExtractorImpl, HandUtil} from './hand.util';
+import {HandExtractorImpl, HandUtil} from './hand.util';
 import {Card, Suit} from '../../card';
 
 const empty = [];
@@ -40,11 +40,11 @@ const sevenWithFiveOfAKind = [new Card(4, Suit.Diamond), new Card(4, Suit.Spade)
   new Card(4, Suit.Diamond), new Card(4, Suit.Club), new Card(13, Suit.Diamond)];
 const sevenWithAFullHouse = [new Card(12, Suit.Diamond), new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(4, Suit.Heart),
   new Card(4, Suit.Diamond), new Card(12, Suit.Club), new Card(6, Suit.Diamond)];
-const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(1, Suit.Diamond), new Card(4, Suit.Heart),
+const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(1, Suit.Diamond), new Card(6, Suit.Heart),
   new Card(4, Suit.Diamond), new Card(1, Suit.Club), new Card(6, Suit.Diamond), new Card(1, Suit.Spade)];
 
 const handUtil = new HandUtil();
-const handExtractor = new FiveCardHandExtractorImpl();
+const handExtractor = new HandExtractorImpl();
 const arrayContents = jasmine.arrayWithExactContents;
 
 describe('HandUtil.isFlush', () => {
@@ -97,16 +97,16 @@ describe('HandExtractor.getFourOfAKind', () => {
   it('givenThreeOfAKind_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(threeOfAKind)).toBeUndefined());
   it('givenFourOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
     expect(handExtractor.getFourOfAKind(fourOfAKind).map(card => card.rank))
-      .toEqual([4, 4, 4, 4, 6]));
+      .toEqual([4, 4, 4, 4]));
   it('givenFiveOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
     expect(handExtractor.getFourOfAKind(fiveOfAKind).map(card => card.rank))
-      .toEqual([4, 4, 4, 4, 4]));
+      .toEqual([4, 4, 4, 4]));
   it('givenSevenWithFourOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
     expect(handExtractor.getFourOfAKind(sevenWithFourOfAKind).map(card => card.rank))
-      .toEqual([4, 4, 4, 4, 12]));
+      .toEqual([4, 4, 4, 4]));
   it('givenSevenWithFiveOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
     expect(handExtractor.getFourOfAKind(sevenWithFiveOfAKind).map(card => card.rank))
-      .toEqual([4, 4, 4, 4, 13]));
+      .toEqual([4, 4, 4, 4]));
 });
 
 describe('HandExtractor.getFullHouse', () => {
@@ -115,6 +115,8 @@ describe('HandExtractor.getFullHouse', () => {
   it('givenThreeOfAKind_whenGetFullHouse_thenUndefined', () => expect(handExtractor.getFullHouse(threeOfAKind)).toBeUndefined());
   it('givenFullHouse_whenGetFullHouse_thenFullHouse', () => expect(handExtractor.getFullHouse(fullHouse))
     .toEqual(arrayContents(fullHouse)));
+  it('givenFiveOfAKind_whenGetFullHouse_thenFiveOfAKind', () => expect(handExtractor.getFullHouse(fiveOfAKind))
+    .toEqual(arrayContents(fiveOfAKind)));
   it('givenSevenWithFullHouse_whenGetFullHouse_thenFullHouse', () =>
     expect(handExtractor.getFullHouse(sevenWithAFullHouse).map(card => card.rank))
       .toEqual(arrayContents([4, 4, 4, 12, 12])));
@@ -127,28 +129,53 @@ describe('HandExtractor.getFullHouse', () => {
 describe('HandExtractor.getTwoPair', () => {
   it('givenEmpty_whenGetTwoPair_thenUndefined', () => expect(handExtractor.getTwoPair(empty)).toBeUndefined());
   it('givenPair_whenGetTwoPair_thenUndefined', () => expect(handExtractor.getTwoPair(threeWithPair)).toBeUndefined());
-  it('givenFourWithTwoPair_whenGetTwoPair_thenUndefined', () => expect(handExtractor.getTwoPair(fourWithTwoPair))
-    .toBeUndefined());
+  it('givenFourWithTwoPair_whenGetTwoPair_thenFourWithTwoPair', () => expect(handExtractor.getTwoPair(fourWithTwoPair))
+    .toEqual(arrayContents(fourWithTwoPair)));
   it('givenFiveWithTwoPair_whenGetTwoPair_thenFiveWithTwoPair', () => expect(handExtractor.getTwoPair(fiveWithTwoPair))
-    .toEqual(arrayContents(fiveWithTwoPair)));
+    .toEqual(arrayContents(fiveWithTwoPair.filter(card => card.rank !== 4))));
   it('givenFourOfAKind_whenGetTwoPair_thenTwoPair', () => expect(handExtractor.getTwoPair(fourOfAKind))
-    .toEqual(arrayContents(fourOfAKind)));
+    .toEqual(arrayContents(fourOfAKind.filter(card => card.rank === 4))));
   it('givenEightWithInterlopingFullHouses_whenGetTwoPair_thenTwoBestPairWithBestKicker', () =>
     expect(handExtractor.getTwoPair(eightWithInterlopingFullHouses).map(card => card.rank))
-      .toEqual([1, 1, 6, 6, 1]));
+      .toEqual([1, 1, 6, 6]));
 });
 
 describe('HandExtractor.getPair', () => {
   it('givenEmpty_whenGetPair_thenUndefined', () => expect(handExtractor.getPair(empty)).toBeUndefined());
-  it('givenThreeWithPair_whenGetPair_thenUndefined', () => expect(handExtractor.getPair(threeWithPair)).toBeUndefined());
+  it('givenThreeWithPair_whenGetPair_thenPair', () => expect(handExtractor.getPair(threeWithPair))
+    .toEqual(threeWithPair.filter(card => card.rank === 4)));
   it('givenPair_whenGetPair_thenPair', () =>
     expect(handExtractor.getPair(pair).map(card => card.rank))
-      .toEqual([8, 8, 1, 13, 4]));
-  it('givenThreeOfAKind_whenGetPair_thenPairWithBestKicker', () => expect(handExtractor.getPair(threeOfAKind)).toBeUndefined());
+      .toEqual([8, 8]));
+  it('givenThreeOfAKind_whenGetPair_thenPair', () =>
+    expect(handExtractor.getPair(threeOfAKind).map(card => card.rank))
+      .toEqual([4, 4]));
   it('givenTwoPair_whenGetPair_thenBestPair', () => expect(handExtractor.getPair(empty)).toBeUndefined());
-
 });
 
 describe('HandExtractor.getHighCard', () => {
+  const getHighCards = (hand: Card[]) => handExtractor.getHighCards(hand, handUtil.minimumHandNumber);
+  it('givenEmpty_whenGetHighCards_thenUndefined', () => expect(getHighCards(empty)).toBeUndefined());
+  it('givenFlush_whenGetHighCards_thenOrderedFlush', () =>
+    expect(getHighCards(flush).map(card => card.rank))
+      .toEqual([1, 12, 10, 9, 6]));
+});
 
+describe('handExtractor.getBest', () => {
+  it('givenEmpty_whenGetBest_thenUndefined', () => expect(handExtractor.getBest(empty)).toBeUndefined());
+  it('givenEightWithInterlopingFullHouses_whenGetBest_thenFullHouse', () =>
+    expect(handExtractor.getBest(eightWithInterlopingFullHouses).map(card => card.rank))
+      .toEqual([1, 1, 1, 6, 6]));
+  it('givenFiveWithTwoPair_whenGetBest_thenTwoPair', () =>
+    expect(handExtractor.getBest(fiveWithTwoPair).map(card => card.rank))
+      .toEqual([1, 1, 6, 6]));
+  it('givenFlush_whenGetBest_thenFlush', () =>
+    expect(handExtractor.getBest(flush).map(card => card.rank))
+      .toEqual([1, 12, 10, 9, 6]));
+  it('givenRoyalStraight_whenGetBest_thenRoyalStraight', () =>
+    expect(handExtractor.getBest(royalStraight).map(card => card.rank))
+      .toEqual([1, 13, 12, 11, 10]));
+  it('givenSevenWithFiveOfAKind_whenGetBest_thenRoyalStraight', () =>
+    expect(handExtractor.getBest(sevenWithFiveOfAKind).map(card => card.rank))
+      .toEqual([4, 4, 4, 4, 4]));
 });

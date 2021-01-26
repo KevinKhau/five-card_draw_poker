@@ -4,7 +4,7 @@ import {Store} from '@ngrx/store';
 import {addCards, removeCards} from '../poker.action';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
-import {FiveCardHandExtractorImpl, HandUtil} from './hand.util';
+import {HandExtractorImpl, HandUtil} from './hand.util';
 
 @Component({
   selector: 'app-hand',
@@ -16,13 +16,14 @@ export class HandComponent implements OnInit, AfterContentInit {
   constructor(
     private deckStore: Store<{ deck: Card[] }>,
     public handUtil: HandUtil = new HandUtil(),
-    public handExtractor: FiveCardHandExtractorImpl = new FiveCardHandExtractorImpl()
+    public handExtractor: HandExtractorImpl = new HandExtractorImpl()
   ) {
     this.deck$ = this.deckStore.select('deck');
   }
 
   private deck$: Observable<Card[]>;
   private readonly HAND_NUMBER = 15;
+  bestHand: Card[] = [];
 
   @Input()
   cards: Card[] = [];
@@ -80,8 +81,13 @@ export class HandComponent implements OnInit, AfterContentInit {
       setTimeout(() => {
         this.cards.push(...this.pickCards(n, deck));
         this.deckStore.dispatch(removeCards({cards: this.cards}));
+        this.bestHand = this.getBestHand();
       });
     });
+  }
+
+  getBestHand(): Card[] {
+    return this.handExtractor.getBest(this.cards);
   }
 
 }
