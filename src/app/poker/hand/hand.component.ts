@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Card} from '../../card';
-import {HandExtractorImpl, HandUtil, StrictHand} from './hand.util';
+import {HandService, StrictHand} from './hand.service';
 import {DeckStoreService} from '../deck-store.service';
 
 @Component({
@@ -12,8 +12,7 @@ export class HandComponent implements OnInit {
 
   constructor(
     private deckStore: DeckStoreService,
-    public handUtil: HandUtil = new HandUtil(),
-    public handExtractor: HandExtractorImpl = new HandExtractorImpl()
+    public handService: HandService = new HandService()
   ) {
   }
 
@@ -52,7 +51,7 @@ export class HandComponent implements OnInit {
   }
 
   getBestHand(): StrictHand {
-    return this.handExtractor.getBest(this.cards);
+    return this.handService.getBest(this.cards);
   }
 
 }

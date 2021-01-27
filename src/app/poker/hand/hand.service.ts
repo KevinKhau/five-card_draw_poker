@@ -2,17 +2,7 @@ import {Card, rankNumber, Suit} from '../../card';
 import {Injectable} from '@angular/core';
 import {positiveModulo} from '../../util';
 
-export interface FiveCardHandFinder {
-  isStraight(hand: Card[]): boolean;
-  isFlush(hand: Card[]): boolean;
-  isFullHouse(hand: Card[]): boolean;
-  isFourOfAKind(hand: Card[]): boolean;
-  isStraightFlush(hand: Card[]): boolean;
-  isFiveOfAKind(hand: Card[]): boolean;
-}
-
 export interface HandExtractor {
-  getBest(hand: Card[]): StrictHand;
   getStraight(hand: Card[]): Card[];
   getFlush(hand: Card[]): Card[];
   getFullHouse(hand: Card[]): Card[];
@@ -22,7 +12,12 @@ export interface HandExtractor {
   getThreeOfAKind(hand: Card[]): Card[];
   getTwoPair(hand: Card[]): Card[];
   getPair(hand: Card[]): Card[];
-  getKicker(hand: Card[], others: Card[], requiredHandLength: number): Card[];
+
+  /**
+   * Returns the best `StrictHand`.
+   * @param hand input hand
+   */
+  getBest(hand: Card[]): StrictHand;
 
   /**
    * Returns rank-sorted hand.
@@ -30,10 +25,12 @@ export interface HandExtractor {
    * @param n the number of cards in the returned hand
    */
   getHighCards(hand: Card[], n: number): Card[];
+
+  getKicker(hand: Card[], others: Card[], requiredHandLength: number): Card[];
+
 }
 
-@Injectable({providedIn: 'root'})
-export class HandUtil implements FiveCardHandFinder {
+export class HandUtil {
   readonly minimumHandNumber = 5;
 
   hasMinimumCardNumber(hand: Card[]): boolean {
@@ -57,38 +54,7 @@ export class HandUtil implements FiveCardHandFinder {
     return hand.filter(card => !cards.includes(card));
   }
 
-  isStraight(hand: Card[]): boolean {
-    if (!this.hasMinimumCardNumber(hand)) return false;
-    return hand
-      .some(card => (card.rank === 1 || card.rank >= this.minimumHandNumber) // start with highest card
-        && Array.from({length: this.minimumHandNumber - 1}, (_, i) => i + 1) // [1, 2, 3, 4]
-          .every(i => card.hasLower(i, hand)));
-  }
-
-  isFlush(hand: Card[]): boolean {
-    if (!this.hasMinimumCardNumber(hand)) return false;
-    return Object.keys(Suit).some((key) => hand.filter(card => card.suit === Suit[key]).length >= this.minimumHandNumber);
-  }
-
-  isFullHouse(hand: Card[]): boolean {
-    throw new Error('Method not implemented.');
-  }
-
-  isFourOfAKind(hand: Card[]): boolean {
-    throw new Error('Method not implemented.');
-  }
-
-  isStraightFlush(hand: Card[]): boolean {
-    return this.isStraight(hand) && this.isFlush(hand);
-  }
-
-  isFiveOfAKind(hand: Card[]): boolean {
-    throw new Error('Method not implemented.');
-  }
-
 }
-
-const handUtil = new HandUtil();
 
 /**
  * Hand ranked above high card, without kicker, and with metadata.
@@ -104,7 +70,7 @@ export interface StrictHand {
  * If the input hand has two pairs, #getTwoPair returns 4 cards, without the kicker.
  */
 @Injectable({providedIn: 'root'})
-export class HandExtractorImpl implements HandExtractor {
+export class HandService extends HandUtil implements HandExtractor {
 
   getPair = this.getSameOfAKind(2);
   getThreeOfAKind = this.getSameOfAKind(3);
@@ -127,7 +93,7 @@ export class HandExtractorImpl implements HandExtractor {
 
     for (let i = 0; i < extractorFunctions.length; i++) {
       const strictExtractor = extractorFunctions[i];
-      const result = strictExtractor.bind(this)(hand, handUtil.minimumHandNumber);
+      const result = strictExtractor.bind(this)(hand, this.minimumHandNumber);
       if (result) {
         return {
           rank: extractorFunctions.length - i,
@@ -160,17 +126,15 @@ export class HandExtractorImpl implements HandExtractor {
     };
   }
 
-
-
   /**
    * Extracts the straight with the highest card.
    * @param hand A hand of any number of cards.
    */
    getStraight(hand: Card[]): Card[] {
-    if (!handUtil.hasMinimumCardNumber(hand)) return;
-    hand = handUtil.reverseOrder(hand);
-    const diffRange: number[] = Array.from({length: handUtil.minimumHandNumber - 1}, (_, i) => i + 1); // [1, 2, 3, 4]
-    for (let i = 0; i < hand.length - (handUtil.minimumHandNumber - 1); i++) {
+    if (!this.hasMinimumCardNumber(hand)) return;
+    hand = this.reverseOrder(hand);
+    const diffRange: number[] = Array.from({length: this.minimumHandNumber - 1}, (_, i) => i + 1); // [1, 2, 3, 4]
+    for (let i = 0; i < hand.length - (this.minimumHandNumber - 1); i++) {
       let buffer: Card[] = [hand[i]];
       for (const diff of diffRange) {
         const lowerCard = hand[i].getLower(diff, hand);
@@ -181,19 +145,19 @@ export class HandExtractorImpl implements HandExtractor {
           break;
         }
       }
-      if (buffer.length >= handUtil.minimumHandNumber) {
+      if (buffer.length >= this.minimumHandNumber) {
         return buffer;
       }
     }
   }
 
   getFlush(hand: Card[]): Card[] {
-    if (!handUtil.hasMinimumCardNumber(hand)) return;
-    hand = handUtil.reverseOrder(hand);
+    if (!this.hasMinimumCardNumber(hand)) return;
+    hand = this.reverseOrder(hand);
     for (const key in Suit) {
       if (!isNaN(Number(Suit[key]))) continue;
       const filteredHand = hand.filter(card => card.suit === Suit[key]);
-      if (filteredHand.length >= handUtil.minimumHandNumber) {
+      if (filteredHand.length >= this.minimumHandNumber) {
         return filteredHand.slice(0, 5);
       }
     }
@@ -203,16 +167,16 @@ export class HandExtractorImpl implements HandExtractor {
     if (hand.length < 5) return;
     const trips = this.getThreeOfAKind(hand);
     if (!trips) return;
-    const pair = this.getPair(handUtil.remove(hand, trips));
+    const pair = this.getPair(this.remove(hand, trips));
     if (!pair)  return;
     return [...trips, ...pair];
   }
 
   getStraightFlush(hand: Card[]): Card[] {
-    if (!handUtil.hasMinimumCardNumber(hand)) return;
-    hand = handUtil.reverseOrder(hand); // Mandatory.
-    const diffRange: number[] = Array.from({length: handUtil.minimumHandNumber - 1}, (_, i) => i + 1); // [1, 2, 3, 4]
-    for (let i = 0; i < hand.length - (handUtil.minimumHandNumber - 1); i++) {
+    if (!this.hasMinimumCardNumber(hand)) return;
+    hand = this.reverseOrder(hand); // Mandatory.
+    const diffRange: number[] = Array.from({length: this.minimumHandNumber - 1}, (_, i) => i + 1); // [1, 2, 3, 4]
+    for (let i = 0; i < hand.length - (this.minimumHandNumber - 1); i++) {
       let buffer: Card[] = [hand[i]];
       for (const diff of diffRange) {
         const lowerCardWithSameSuit = hand.find(c => c.suit === hand[i].suit && diff === positiveModulo(hand[i].rank - c.rank, rankNumber));
@@ -223,7 +187,7 @@ export class HandExtractorImpl implements HandExtractor {
           break;
         }
       }
-      if (buffer.length >= handUtil.minimumHandNumber) {
+      if (buffer.length >= this.minimumHandNumber) {
         return buffer;
       }
     }
@@ -233,19 +197,19 @@ export class HandExtractorImpl implements HandExtractor {
     if (hand.length < 4) return;
     const highestRankedPair = this.getPair(hand);
     if (!highestRankedPair) return;
-    const lowestRankingPair = this.getPair(handUtil.remove(hand, highestRankedPair));
+    const lowestRankingPair = this.getPair(this.remove(hand, highestRankedPair));
     if (!lowestRankingPair) return;
     return [...highestRankedPair, ...lowestRankingPair];
   }
 
   getHighCards(hand: Card[], n: number): Card[] {
     if (!hand.length) return;
-    return handUtil.reverseOrder(hand).slice(0, n || hand.length);
+    return this.reverseOrder(hand).slice(0, n || hand.length);
   }
 
   getKicker(hand: Card[], combination: Card[], requiredHandLength: number): Card[] {
     if (hand.length < requiredHandLength) return;
-    const withoutCombination = handUtil.remove(hand, combination);
+    const withoutCombination = this.remove(hand, combination);
     return this.getHighCards(withoutCombination, requiredHandLength - combination.length);
   }
 

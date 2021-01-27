@@ -1,5 +1,19 @@
-import {HandExtractorImpl, HandUtil} from './hand.util';
+import {HandService} from './hand.service';
 import {Card, Suit} from '../../card';
+import {TestBed} from '@angular/core/testing';
+
+describe('HandService', () => {
+  let service: HandService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(HandService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
 
 const empty = [];
 const highCard = [new Card(1, Suit.Club), new Card(2, Suit.Spade), new Card(4, Suit.Heart), new Card(13, Suit.Heart)];
@@ -45,118 +59,101 @@ const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(4, Suit
 const flushAndFullHouse = [new Card(3), new Card(6), new Card(9), new Card(10), new Card(5),
   new Card(7), new Card(13), new Card(7), new Card(13), new Card(7)];
 
-const handUtil = new HandUtil();
-const handExtractor = new HandExtractorImpl();
+const handUtil = new HandService();
+const handService = new HandService();
 const arrayContents = jasmine.arrayWithExactContents;
 
-describe('HandUtil.isFlush', () => {
-  it('givenEmpty_whenIsFlush_thenFalse', () => expect(handUtil.isFlush(empty)).toBeFalsy());
-  it('givenStraight_whenIsFlush_thenFalse', () => expect(handUtil.isFlush(straight)).toBeFalsy());
-  it('givenFlush_whenIsFlush_thenTrue', () => expect(handUtil.isFlush(flush)).toBeTruthy());
-});
-
-describe('HandUtil.isStraight', () => {
-  it('givenEmpty_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(empty)).toBeFalsy());
-  it('givenHighCard_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(highCard)).toBeFalsy());
-  it('givenWheelStraight_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(wheelStraight)).toBeFalsy());
-  it('givenRoyalStraight_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(royalStraight)).toBeTruthy());
-  it('givenStraight_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(straight)).toBeTruthy());
-  it('givenFlush_whenIsStraight_thenFalse', () => expect(handUtil.isStraight(flush)).toBeFalsy());
-  it('givenStraightFlush_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(straightFlush)).toBeTruthy());
-  it('givenRoyalFlush_whenIsStraight_thenTrue', () => expect(handUtil.isStraight(royalFlush)).toBeTruthy());
-});
-
 describe('HandExtractor.getFlush', () => {
-  it('givenEmpty_whenGetFlush_thenUndefined', () => expect(handExtractor.getFlush(empty)).toBeUndefined());
-  it('givenFlush_whenGetFlush_thenFlush', () => expect(handExtractor.getFlush(flush)).toEqual(arrayContents(flush)));
-  it('givenRoyalFlush_whenGetFlush_thenRoyalFlush', () => expect(handExtractor.getFlush(royalFlush))
+  it('givenEmpty_whenGetFlush_thenUndefined', () => expect(handService.getFlush(empty)).toBeUndefined());
+  it('givenFlush_whenGetFlush_thenFlush', () => expect(handService.getFlush(flush)).toEqual(arrayContents(flush)));
+  it('givenRoyalFlush_whenGetFlush_thenRoyalFlush', () => expect(handService.getFlush(royalFlush))
     .toEqual(arrayContents(royalFlush)));
-  it('givenSevenWithFlush_whenGetFlush_thenValidFlush', () => expect(handExtractor.getFlush(sevenWithFlush)).toEqual(
+  it('givenSevenWithFlush_whenGetFlush_thenValidFlush', () => expect(handService.getFlush(sevenWithFlush)).toEqual(
     arrayContents(sevenWithFlush.filter(card => card.suit !== Suit.Club && card.rank !== 2))));
-  it('givenSevenWithRoyalFlush_whenGetFlush_thenValidFlush', () => expect(handExtractor.getFlush(sevenWithRoyalFlush)).toEqual(
+  it('givenSevenWithRoyalFlush_whenGetFlush_thenValidFlush', () => expect(handService.getFlush(sevenWithRoyalFlush)).toEqual(
     arrayContents(sevenWithRoyalFlush.filter(card => card.suit !== Suit.Spade && card.rank !== 9))));
 });
 
 describe('HandExtractor.getStraightFlush', () => {
-  it('givenEmpty_whenGetStraightFlush_thenUndefined', () => expect(handExtractor.getStraightFlush(empty)).toBeUndefined());
-  it('givenStraight_whenGetStraightFlush_thenUndefined', () => expect(handExtractor.getStraightFlush(straight)).toBeUndefined());
-  it('givenFlush_whenGetStraightFlush_thenUndefined', () => expect(handExtractor.getStraightFlush(flush)).toBeUndefined());
-  it('givenStraightFlush_whenGetStraightFlush_thenStraightFlush', () => expect(handExtractor.getStraightFlush(straightFlush))
+  it('givenEmpty_whenGetStraightFlush_thenUndefined', () => expect(handService.getStraightFlush(empty)).toBeUndefined());
+  it('givenStraight_whenGetStraightFlush_thenUndefined', () => expect(handService.getStraightFlush(straight)).toBeUndefined());
+  it('givenFlush_whenGetStraightFlush_thenUndefined', () => expect(handService.getStraightFlush(flush)).toBeUndefined());
+  it('givenStraightFlush_whenGetStraightFlush_thenStraightFlush', () => expect(handService.getStraightFlush(straightFlush))
     .toEqual(arrayContents(straightFlush)));
-  it('givenRoyalFlush_whenGetStraightFlush_thenRoyalFlush', () => expect(handExtractor.getStraightFlush(royalFlush))
+  it('givenRoyalFlush_whenGetStraightFlush_thenRoyalFlush', () => expect(handService.getStraightFlush(royalFlush))
     .toEqual(arrayContents(royalFlush)));
   it('givenSevenWithStraight_whenGetStraightFlush_thenUndefined', () =>
-    expect(handExtractor.getStraightFlush(sevenWithStraight)).toBeUndefined());
+    expect(handService.getStraightFlush(sevenWithStraight)).toBeUndefined());
   it('givenSevenWithFlush_whenGetStraightFlush_thenUndefined', () =>
-    expect(handExtractor.getStraightFlush(sevenWithFlush)).toBeUndefined());
+    expect(handService.getStraightFlush(sevenWithFlush)).toBeUndefined());
   it('givenSevenWithRoyalFlush_whenGetStraightFlush_thenRoyalFlush', () =>
-    expect(handExtractor.getStraightFlush(sevenWithRoyalFlush))
+    expect(handService.getStraightFlush(sevenWithRoyalFlush))
       .toEqual(arrayContents(sevenWithRoyalFlush.filter(card => card.suit !== Suit.Spade && card.rank !== 9))));
 });
 
 describe('HandExtractor.getFourOfAKind', () => {
-  it('givenEmpty_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(empty)).toBeUndefined());
-  it('givenThreeOfAKind_whenGetFourOfAKind_thenUndefined', () => expect(handExtractor.getFourOfAKind(threeOfAKind)).toBeUndefined());
+  it('givenEmpty_whenGetFourOfAKind_thenUndefined', () => expect(handService.getFourOfAKind(empty)).toBeUndefined());
+  it('givenThreeOfAKind_whenGetFourOfAKind_thenUndefined', () => expect(handService.getFourOfAKind(threeOfAKind)).toBeUndefined());
   it('givenFourOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
-    expect(handExtractor.getFourOfAKind(fourOfAKind).map(card => card.rank))
+    expect(handService.getFourOfAKind(fourOfAKind).map(card => card.rank))
       .toEqual([4, 4, 4, 4]));
   it('givenFiveOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
-    expect(handExtractor.getFourOfAKind(fiveOfAKind).map(card => card.rank))
+    expect(handService.getFourOfAKind(fiveOfAKind).map(card => card.rank))
       .toEqual([4, 4, 4, 4]));
   it('givenSevenWithFourOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
-    expect(handExtractor.getFourOfAKind(sevenWithFourOfAKind).map(card => card.rank))
+    expect(handService.getFourOfAKind(sevenWithFourOfAKind).map(card => card.rank))
       .toEqual([4, 4, 4, 4]));
   it('givenSevenWithFiveOfAKind_whenGetFourOfAKind_thenFourOfAKind', () =>
-    expect(handExtractor.getFourOfAKind(sevenWithFiveOfAKind).map(card => card.rank))
+    expect(handService.getFourOfAKind(sevenWithFiveOfAKind).map(card => card.rank))
       .toEqual([4, 4, 4, 4]));
 });
 
 describe('HandExtractor.getFullHouse', () => {
-  it('givenEmpty_whenGetFullHouse_thenUndefined', () => expect(handExtractor.getFullHouse(empty)).toBeUndefined());
-  it('givenPair_whenGetFullHouse_thenUndefined', () => expect(handExtractor.getFullHouse(threeWithPair)).toBeUndefined());
-  it('givenThreeOfAKind_whenGetFullHouse_thenUndefined', () => expect(handExtractor.getFullHouse(threeOfAKind)).toBeUndefined());
-  it('givenFullHouse_whenGetFullHouse_thenFullHouse', () => expect(handExtractor.getFullHouse(fullHouse))
+  it('givenEmpty_whenGetFullHouse_thenUndefined', () => expect(handService.getFullHouse(empty)).toBeUndefined());
+  it('givenPair_whenGetFullHouse_thenUndefined', () => expect(handService.getFullHouse(threeWithPair)).toBeUndefined());
+  it('givenThreeOfAKind_whenGetFullHouse_thenUndefined', () => expect(handService.getFullHouse(threeOfAKind)).toBeUndefined());
+  it('givenFullHouse_whenGetFullHouse_thenFullHouse', () => expect(handService.getFullHouse(fullHouse))
     .toEqual(arrayContents(fullHouse)));
-  it('givenFiveOfAKind_whenGetFullHouse_thenFiveOfAKind', () => expect(handExtractor.getFullHouse(fiveOfAKind))
+  it('givenFiveOfAKind_whenGetFullHouse_thenFiveOfAKind', () => expect(handService.getFullHouse(fiveOfAKind))
     .toEqual(arrayContents(fiveOfAKind)));
   it('givenSevenWithFullHouse_whenGetFullHouse_thenFullHouse', () =>
-    expect(handExtractor.getFullHouse(sevenWithAFullHouse).map(card => card.rank))
+    expect(handService.getFullHouse(sevenWithAFullHouse).map(card => card.rank))
       .toEqual(arrayContents([4, 4, 4, 12, 12])));
   it('givenEightWithInterlopingFullHouses_whenGetFullHouse_thenBestFullHouse', () =>
-    expect(handExtractor.getFullHouse(eightWithInterlopingFullHouses).map(card => card.rank))
+    expect(handService.getFullHouse(eightWithInterlopingFullHouses).map(card => card.rank))
       .toEqual(arrayContents([1, 1, 1, 6, 6])));
 
 });
 
 describe('HandExtractor.getTwoPair', () => {
-  it('givenEmpty_whenGetTwoPair_thenUndefined', () => expect(handExtractor.getTwoPair(empty)).toBeUndefined());
-  it('givenPair_whenGetTwoPair_thenUndefined', () => expect(handExtractor.getTwoPair(threeWithPair)).toBeUndefined());
-  it('givenFourWithTwoPair_whenGetTwoPair_thenFourWithTwoPair', () => expect(handExtractor.getTwoPair(fourWithTwoPair))
+  it('givenEmpty_whenGetTwoPair_thenUndefined', () => expect(handService.getTwoPair(empty)).toBeUndefined());
+  it('givenPair_whenGetTwoPair_thenUndefined', () => expect(handService.getTwoPair(threeWithPair)).toBeUndefined());
+  it('givenFourWithTwoPair_whenGetTwoPair_thenFourWithTwoPair', () => expect(handService.getTwoPair(fourWithTwoPair))
     .toEqual(arrayContents(fourWithTwoPair)));
-  it('givenFiveWithTwoPair_whenGetTwoPair_thenFiveWithTwoPair', () => expect(handExtractor.getTwoPair(fiveWithTwoPair))
+  it('givenFiveWithTwoPair_whenGetTwoPair_thenFiveWithTwoPair', () => expect(handService.getTwoPair(fiveWithTwoPair))
     .toEqual(arrayContents(fiveWithTwoPair.filter(card => card.rank !== 4))));
-  it('givenFourOfAKind_whenGetTwoPair_thenTwoPair', () => expect(handExtractor.getTwoPair(fourOfAKind))
+  it('givenFourOfAKind_whenGetTwoPair_thenTwoPair', () => expect(handService.getTwoPair(fourOfAKind))
     .toEqual(arrayContents(fourOfAKind.filter(card => card.rank === 4))));
   it('givenEightWithInterlopingFullHouses_whenGetTwoPair_thenTwoBestPairWithBestKicker', () =>
-    expect(handExtractor.getTwoPair(eightWithInterlopingFullHouses).map(card => card.rank))
+    expect(handService.getTwoPair(eightWithInterlopingFullHouses).map(card => card.rank))
       .toEqual([1, 1, 6, 6]));
 });
 
 describe('HandExtractor.getPair', () => {
-  it('givenEmpty_whenGetPair_thenUndefined', () => expect(handExtractor.getPair(empty)).toBeUndefined());
-  it('givenThreeWithPair_whenGetPair_thenPair', () => expect(handExtractor.getPair(threeWithPair))
+  it('givenEmpty_whenGetPair_thenUndefined', () => expect(handService.getPair(empty)).toBeUndefined());
+  it('givenThreeWithPair_whenGetPair_thenPair', () => expect(handService.getPair(threeWithPair))
     .toEqual(threeWithPair.filter(card => card.rank === 4)));
   it('givenPair_whenGetPair_thenPair', () =>
-    expect(handExtractor.getPair(pair).map(card => card.rank))
+    expect(handService.getPair(pair).map(card => card.rank))
       .toEqual([8, 8]));
   it('givenThreeOfAKind_whenGetPair_thenPair', () =>
-    expect(handExtractor.getPair(threeOfAKind).map(card => card.rank))
+    expect(handService.getPair(threeOfAKind).map(card => card.rank))
       .toEqual([4, 4]));
-  it('givenTwoPair_whenGetPair_thenBestPair', () => expect(handExtractor.getPair(empty)).toBeUndefined());
+  it('givenTwoPair_whenGetPair_thenBestPair', () => expect(handService.getPair(empty)).toBeUndefined());
 });
 
 describe('HandExtractor.getHighCard', () => {
-  const getHighCards = (hand: Card[]) => handExtractor.getHighCards(hand, handUtil.minimumHandNumber);
+  const getHighCards = (hand: Card[]) => handService.getHighCards(hand, handUtil.minimumHandNumber);
   it('givenEmpty_whenGetHighCards_thenUndefined', () => expect(getHighCards(empty)).toBeUndefined());
   it('givenFlush_whenGetHighCards_thenOrderedFlush', () =>
     expect(getHighCards(flush).map(card => card.rank))
@@ -164,23 +161,30 @@ describe('HandExtractor.getHighCard', () => {
 });
 
 describe('handExtractor.getBest', () => {
-  it('givenEmpty_whenGetBest_thenUndefined', () => expect(handExtractor.getBest(empty)).toBeUndefined());
-  it('givenEightWithInterlopingFullHouses_whenGetBest_thenFullHouse', () =>
-    expect(handExtractor.getBest(eightWithInterlopingFullHouses).map(card => card.rank))
-      .toEqual([1, 1, 1, 6, 6]));
-  it('givenFiveWithTwoPair_whenGetBest_thenTwoPair', () =>
-    expect(handExtractor.getBest(fiveWithTwoPair).map(card => card.rank))
-      .toEqual([1, 1, 6, 6]));
+  const getBestCards = (hand) => handService.getBest(hand).cards;
+  it('givenEmpty_whenGetBest_thenUndefined', () => expect(handService.getBest(empty)).toBeUndefined());
+  it('givenEightWithInterlopingFullHouses_whenGetBest_thenFullHouse', () => {
+    const result = handService.getBest(eightWithInterlopingFullHouses);
+    expect(result.cards.map(card => card.rank)).toEqual([1, 1, 1, 6, 6]);
+    expect(result.name).toEqual('Full House');
+  });
+  it('givenFiveWithTwoPair_whenGetBest_thenTwoPair', () => {
+    const result = handService.getBest(fiveWithTwoPair);
+    expect(result.cards.map(card => card.rank)).toEqual([1, 1, 6, 6]);
+    expect(result.name).toEqual('Two Pair');
+  });
   it('givenFlush_whenGetBest_thenFlush', () =>
-    expect(handExtractor.getBest(flush).map(card => card.rank))
+    expect(getBestCards(flush).map(card => card.rank))
       .toEqual([1, 12, 10, 9, 6]));
   it('givenRoyalStraight_whenGetBest_thenRoyalStraight', () =>
-    expect(handExtractor.getBest(royalStraight).map(card => card.rank))
+    expect(getBestCards(royalStraight).map(card => card.rank))
       .toEqual([1, 13, 12, 11, 10]));
-  it('givenSevenWithFiveOfAKind_whenGetBest_thenRoyalStraight', () =>
-    expect(handExtractor.getBest(sevenWithFiveOfAKind).map(card => card.rank))
-      .toEqual([4, 4, 4, 4, 4]));
+  it('givenSevenWithFiveOfAKind_whenGetBest_thenRoyalStraight', () => {
+    const result = handService.getBest(sevenWithFiveOfAKind);
+    expect(result.cards.map(card => card.rank)).toEqual([4, 4, 4, 4, 4]);
+    expect(result.name).toEqual('Five Of A Kind');
+  });
   it('givenFlushAndFullHouse_whenGetBest_thenFullHouse', () =>
-    expect(handExtractor.getBest(flushAndFullHouse).map(card => card.rank))
+    expect(getBestCards(flushAndFullHouse).map(card => card.rank))
       .toEqual([7, 7, 7, 13, 13]));
 });

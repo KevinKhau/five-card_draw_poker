@@ -14,7 +14,7 @@ const components = [
   HandComponent
 ];
 
-const pipes = [
+export const pipes = [
   SuitPipe,
   RankPipe
 ];

@@ -1,20 +1,13 @@
-import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import {initialState} from './poker/poker.reducer';
-import {MockStore, provideMockStore} from '@ngrx/store/testing';
+import {TestBed} from '@angular/core/testing';
+import {AppComponent} from './app.component';
 
 describe('AppComponent', () => {
-  let store: MockStore;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
         AppComponent
-      ],
-      providers: [
-        provideMockStore({ initialState }),
       ]
     }).compileComponents();
-    store = TestBed.inject(MockStore);
   });
 
   it('should create the app', () => {
