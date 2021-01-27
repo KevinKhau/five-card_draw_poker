@@ -42,6 +42,8 @@ const sevenWithAFullHouse = [new Card(12, Suit.Diamond), new Card(6, Suit.Club),
   new Card(4, Suit.Diamond), new Card(12, Suit.Club), new Card(6, Suit.Diamond)];
 const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(1, Suit.Diamond), new Card(6, Suit.Heart),
   new Card(4, Suit.Diamond), new Card(1, Suit.Club), new Card(6, Suit.Diamond), new Card(1, Suit.Spade)];
+const flushAndFullHouse = [new Card(3), new Card(6), new Card(9), new Card(10), new Card(5),
+  new Card(7), new Card(13), new Card(7), new Card(13), new Card(7)];
 
 const handUtil = new HandUtil();
 const handExtractor = new HandExtractorImpl();
@@ -178,4 +180,7 @@ describe('handExtractor.getBest', () => {
   it('givenSevenWithFiveOfAKind_whenGetBest_thenRoyalStraight', () =>
     expect(handExtractor.getBest(sevenWithFiveOfAKind).map(card => card.rank))
       .toEqual([4, 4, 4, 4, 4]));
+  it('givenFlushAndFullHouse_whenGetBest_thenFullHouse', () =>
+    expect(handExtractor.getBest(flushAndFullHouse).map(card => card.rank))
+      .toEqual([7, 7, 7, 13, 13]));
 });

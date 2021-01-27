@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {Card, rankNumber, Suit} from '../card';
 import {Store} from '@ngrx/store';
 import {set} from './poker.action';
@@ -7,7 +7,8 @@ import {Observable} from 'rxjs';
 @Component({
   selector: 'app-poker',
   templateUrl: './poker.component.html',
-  styleUrls: ['./poker.component.css']
+  styleUrls: ['./poker.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class PokerComponent implements OnInit {
 

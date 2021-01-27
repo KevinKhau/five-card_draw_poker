@@ -4,7 +4,7 @@ export const rankNumber = 13;
 
 export class Card {
 
-  constructor(rank: number, suit: Suit) {
+  constructor(rank: number, suit: Suit = Suit.Club) {
     this.rank = rank;
     this.suit = suit;
     this.id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);

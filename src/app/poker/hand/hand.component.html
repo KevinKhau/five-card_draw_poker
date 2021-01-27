@@ -1,13 +1,13 @@
 <h2>Hand</h2>
 <!-- *ngIf() with method: remove -->
-<p *ngIf="bestHand">{{ bestHand | json }}</p>
+<p *ngIf="bestHand">{{ bestHand.name }}, {{ bestHand.rank }}.</p>
 
 <ul>
   <li
-    *ngFor="let card of cards" class="{{card.suit}}"
+    *ngFor="let card of cards" class="card {{card.suit}}"
     (click)="toggleThrow(this.card);"
-    [class.marked]="waste.includes(this.card)"
-    [class.inBestHand]="bestHand.includes(this.card)">
+    [class.marked]="waste?.includes(this.card)"
+    [class.inBestHand]="bestHand?.cards.includes(this.card)">
     {{card.rank | rank}} {{card.suit | suit}}
   </li>
 </ul>

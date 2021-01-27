@@ -1,15 +1,15 @@
-import {AfterContentInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterContentInit, Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {Card} from '../../card';
 import {Store} from '@ngrx/store';
 import {addCards, removeCards} from '../poker.action';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
-import {HandExtractorImpl, HandUtil} from './hand.util';
+import {HandExtractorImpl, HandUtil, StrictHand} from './hand.util';
 
 @Component({
   selector: 'app-hand',
   templateUrl: './hand.component.html',
-  styleUrls: ['./hand.component.css']
+  styleUrls: ['./hand.component.css'],
 })
 export class HandComponent implements OnInit, AfterContentInit {
 
@@ -22,8 +22,8 @@ export class HandComponent implements OnInit, AfterContentInit {
   }
 
   private deck$: Observable<Card[]>;
-  private readonly HAND_NUMBER = 15;
-  bestHand: Card[] = [];
+  private readonly HAND_NUMBER = 13;
+  bestHand: StrictHand;
 
   @Input()
   cards: Card[] = [];
@@ -86,7 +86,7 @@ export class HandComponent implements OnInit, AfterContentInit {
     });
   }
 
-  getBestHand(): Card[] {
+  getBestHand(): StrictHand {
     return this.handExtractor.getBest(this.cards);
   }
 

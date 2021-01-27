@@ -1,6 +1,6 @@
-:host ::ng-deep .li {
-  box-shadow: 2px 2px #aaa;
-  width: 300px;
+.card {
+  width: 60px;
+  line-height: 90px;
 }
 
 .roll {
@@ -9,9 +9,12 @@
 }
 
 .marked {
-  background: beige;
+  box-shadow: 2px 2px #aaa;
+  border: 2px solid grey;
 }
 
 .inBestHand {
   background: greenyellow;
+  font-size: 20pt;
+  font-weight: bold;
 }
