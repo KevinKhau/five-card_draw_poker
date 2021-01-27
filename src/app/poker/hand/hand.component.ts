@@ -1,27 +1,22 @@
-import {AfterContentInit, Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Card} from '../../card';
-import {Store} from '@ngrx/store';
-import {addCards, removeCards} from '../poker.action';
-import {Observable} from 'rxjs';
-import {first} from 'rxjs/operators';
 import {HandExtractorImpl, HandUtil, StrictHand} from './hand.util';
+import {DeckStoreService} from '../deck-store.service';
 
 @Component({
   selector: 'app-hand',
   templateUrl: './hand.component.html',
   styleUrls: ['./hand.component.css'],
 })
-export class HandComponent implements OnInit, AfterContentInit {
+export class HandComponent implements OnInit {
 
   constructor(
-    private deckStore: Store<{ deck: Card[] }>,
+    private deckStore: DeckStoreService,
     public handUtil: HandUtil = new HandUtil(),
     public handExtractor: HandExtractorImpl = new HandExtractorImpl()
   ) {
-    this.deck$ = this.deckStore.select('deck');
   }
 
-  private deck$: Observable<Card[]>;
   private readonly HAND_NUMBER = 13;
   bestHand: StrictHand;
 
@@ -31,17 +26,7 @@ export class HandComponent implements OnInit, AfterContentInit {
 
   @Output() rollEvent = new EventEmitter<Card[]>();
 
-  /**
-   * Returns a random number between min (inclusive) and max (exclusive)
-   */
-  static getRandomInt(min, max): number {
-    return Math.floor(Math.random() * (max - min) + min);
-  }
-
   ngOnInit(): void {
-  }
-
-  ngAfterContentInit(): void {
     this.drawCards(this.HAND_NUMBER);
   }
 
@@ -57,33 +42,13 @@ export class HandComponent implements OnInit, AfterContentInit {
     this.rollEvent.emit(this.waste);
     this.cards = this.cards.filter(c => !this.waste.includes(c));
     this.drawCards(this.waste.length);
-    this.deckStore.dispatch(addCards({cards: this.waste}));
+    this.deckStore.addCards(this.waste);
     this.waste = [];
-
-  }
-
-  pickCards(n: number, deck: Card[]): Card[] {
-    const draw = [];
-    for (let i = 0; i < n && deck.length > 0; i++) {
-      const drawnCard = this.pickCard(deck);
-      deck = deck.filter(c => c !== drawnCard);
-      draw.push(drawnCard);
-    }
-    return draw;
-  }
-  pickCard(deck: Card[]): Card {
-    const index = HandComponent.getRandomInt(0, deck.length);
-    return deck.slice(index, index + 1)[0];
   }
 
   private drawCards(n: number): void {
-    this.deck$.pipe(first((deck: Card[]) => deck && !!deck.length)).subscribe(deck => {
-      setTimeout(() => {
-        this.cards.push(...this.pickCards(n, deck));
-        this.deckStore.dispatch(removeCards({cards: this.cards}));
-        this.bestHand = this.getBestHand();
-      });
-    });
+    this.cards.push(...this.deckStore.drawCards(n));
+    this.bestHand = this.getBestHand();
   }
 
   getBestHand(): StrictHand {
@@ -91,5 +56,3 @@ export class HandComponent implements OnInit, AfterContentInit {
   }
 
 }
-
-

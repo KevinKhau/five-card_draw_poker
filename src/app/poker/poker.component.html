@@ -1,6 +1,6 @@
 <h3>Deck</h3>
 <ul>
-  <li *ngFor="let card of (deck$ | async)" class="card {{card.suit.valueOf()}}">
+  <li *ngFor="let card of (this.deckStore.deck$ | async)" class="card {{card.suit.valueOf()}}">
     {{card.rank | rank}} {{card.suit | suit}}
   </li>
 </ul>
