@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Card} from '../../card';
 import {HandService, StrictHand} from './hand.service';
 import {DeckStoreService} from '../deck-store.service';
@@ -17,6 +17,9 @@ export class HandComponent implements OnInit {
   }
 
   private readonly CARD_NUMBER = 5;
+
+  @Input()
+  name = 'Hand';
   cards: Card[] = [];
   bestHand: StrictHand;
   waste: Card[] = [];

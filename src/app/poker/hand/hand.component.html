@@ -1,5 +1,8 @@
-<h2>Hand</h2>
-<!-- *ngIf() with method: remove -->
+<mat-form-field class="player">
+  <mat-label>Player</mat-label>
+  <input matInput placeholder="" value="{{name}}">
+</mat-form-field>
+
 <p *ngIf="bestHand">{{ bestHand.name }}</p>
 
 <ul>

@@ -13,3 +13,7 @@
   font-size: 20pt;
   font-weight: bold;
 }
+
+mat-form-field.player {
+  width: 80px;
+}

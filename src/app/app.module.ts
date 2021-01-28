@@ -9,6 +9,7 @@ import {SuitPipe} from './poker/suit.pipe';
 import {RankPipe} from './poker/rank.pipe';
 import {MatButtonModule} from '@angular/material/button';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatInputModule} from '@angular/material/input';
 
 const components = [
   AppComponent,
@@ -21,6 +22,12 @@ export const pipes = [
   RankPipe
 ];
 
+export const material = [
+  MatButtonModule,
+  MatInputModule,
+  BrowserAnimationsModule
+];
+
 @NgModule({
   declarations: [
     ...components,
@@ -31,8 +38,7 @@ export const pipes = [
     RouterModule.forRoot([
       {path: 'poker', component: PokerComponent},
     ]),
-    MatButtonModule,
-    BrowserAnimationsModule
+    ...material,
   ],
   providers: [],
   bootstrap: [AppComponent]

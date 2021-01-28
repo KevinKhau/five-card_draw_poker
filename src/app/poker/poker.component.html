@@ -1,11 +1,13 @@
-<h3>Deck</h3>
-<ul>
-  <li *ngFor="let card of (this.deckStore.deck$ | async)" class="card {{card.suit.valueOf()}}">
-    {{card.rank | rank}} {{card.suit | suit}}
-  </li>
-</ul>
+<div class="poker">
+  <h3>Deck</h3>
+  <ul>
+    <li *ngFor="let card of (this.deckStore.deck$ | async)" class="card {{card.suit.valueOf()}}">
+      {{card.rank | rank}} {{card.suit | suit}}
+    </li>
+  </ul>
 
-<app-hand></app-hand>
-<app-hand></app-hand>
+  <app-hand name="Maï"></app-hand>
+  <app-hand name="Kévin"></app-hand>
 
-<button mat-raised-button color="primary" class="roll" (click)="roll()">{{'roll' | uppercase}}</button>
+  <button mat-raised-button color="primary" class="roll" (click)="roll()">{{'roll' | uppercase}}</button>
+</div>
