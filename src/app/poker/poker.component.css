@@ -2,6 +2,10 @@
   padding: 7px;
 }
 
+.hands > app-hand{
+  display: inline-block;
+}
+
 ul {
   width: 650px;
 }

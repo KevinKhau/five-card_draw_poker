@@ -62,7 +62,16 @@ export class HandUtil {
 export interface StrictHand {
   rank: number;
   name: string;
+
+  /**
+   * Cards making up the strict hand.
+   */
   cards: Card[];
+
+  /**
+   * All cards of the initial hand.
+   */
+  all: Card[];
 }
 
 /**
@@ -93,10 +102,17 @@ export class HandService extends HandUtil implements HandExtractor {
         return {
           rank: extractorFunctions.length - i,
           name: strictExtractor.name.slice(3).replace(/([A-Z])/g, ' $1').trim(),
-          cards: result
+          cards: result,
+          all: hand
         };
       }
     }
+  }
+
+  compare(hand: StrictHand, other: StrictHand): number {
+    const rankDiff = hand.rank - other.rank;
+    if (rankDiff !== 0) return rankDiff;
+    return 0;
   }
 
   /* Must be defined as class named method to use Function#name in #getBest */

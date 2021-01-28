@@ -10,6 +10,7 @@ import {RankPipe} from './poker/rank.pipe';
 import {MatButtonModule} from '@angular/material/button';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule} from '@angular/material/input';
+import {MatCardModule} from '@angular/material/card';
 
 const components = [
   AppComponent,
@@ -25,6 +26,7 @@ export const pipes = [
 export const material = [
   MatButtonModule,
   MatInputModule,
+  MatCardModule,
   BrowserAnimationsModule
 ];
 

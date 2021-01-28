@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {Card} from '../../card';
 import {HandService, StrictHand} from './hand.service';
 import {DeckStoreService} from '../deck-store.service';
@@ -7,6 +7,7 @@ import {DeckStoreService} from '../deck-store.service';
   selector: 'app-hand',
   templateUrl: './hand.component.html',
   styleUrls: ['./hand.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class HandComponent implements OnInit {
 
@@ -19,7 +20,7 @@ export class HandComponent implements OnInit {
   private readonly CARD_NUMBER = 5;
 
   @Input()
-  name = 'Hand';
+  name = 'Player';
   cards: Card[] = [];
   bestHand: StrictHand;
   waste: Card[] = [];
