@@ -7,6 +7,8 @@ import {PokerComponent} from './poker/poker.component';
 import {HandComponent} from './poker/hand/hand.component';
 import {SuitPipe} from './poker/suit.pipe';
 import {RankPipe} from './poker/rank.pipe';
+import {MatButtonModule} from '@angular/material/button';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 const components = [
   AppComponent,
@@ -29,6 +31,8 @@ export const pipes = [
     RouterModule.forRoot([
       {path: 'poker', component: PokerComponent},
     ]),
+    MatButtonModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

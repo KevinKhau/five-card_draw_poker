@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Card} from '../../card';
 import {HandService, StrictHand} from './hand.service';
 import {DeckStoreService} from '../deck-store.service';
@@ -16,17 +16,13 @@ export class HandComponent implements OnInit {
   ) {
   }
 
-  private readonly HAND_NUMBER = 5;
-  bestHand: StrictHand;
-
-  @Input()
+  private readonly CARD_NUMBER = 5;
   cards: Card[] = [];
+  bestHand: StrictHand;
   waste: Card[] = [];
 
-  @Output() rollEvent = new EventEmitter<Card[]>();
-
   ngOnInit(): void {
-    this.drawCards(this.HAND_NUMBER);
+    this.drawCards(this.CARD_NUMBER);
   }
 
   toggleThrow(card: Card): void {
@@ -38,7 +34,6 @@ export class HandComponent implements OnInit {
   }
 
   roll(): void {
-    this.rollEvent.emit(this.waste);
     this.cards = this.cards.filter(c => !this.waste.includes(c));
     this.drawCards(this.waste.length);
     this.deckStore.addCards(this.waste);

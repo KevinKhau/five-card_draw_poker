@@ -18,3 +18,8 @@ ul {
 li.heart, li.diamond {
   color: red;
 }
+
+button.roll {
+  width: 300px;
+  margin-left: 50px;
+}
