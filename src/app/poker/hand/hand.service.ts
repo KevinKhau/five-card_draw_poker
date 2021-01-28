@@ -24,7 +24,7 @@ export interface HandExtractor {
    * @param hand input hand
    * @param n the number of cards in the returned hand
    */
-  getHighCards(hand: Card[], n: number): Card[];
+  getHighCard(hand: Card[], n: number): Card[];
 
   getKicker(hand: Card[], others: Card[], requiredHandLength: number): Card[];
 
@@ -72,11 +72,6 @@ export interface StrictHand {
 @Injectable({providedIn: 'root'})
 export class HandService extends HandUtil implements HandExtractor {
 
-  getPair = this.getSameOfAKind(2);
-  getThreeOfAKind = this.getSameOfAKind(3);
-  getFourOfAKind = this.getSameOfAKind(4);
-  getFiveOfAKind = this.getSameOfAKind(5);
-
   getBest(hand: Card[]): StrictHand {
     const extractorFunctions = [
       this.getFiveOfAKind,
@@ -88,12 +83,12 @@ export class HandService extends HandUtil implements HandExtractor {
       this.getThreeOfAKind,
       this.getTwoPair,
       this.getPair,
-      // this.getHighCards
+      this.getHighCard
     ];
 
     for (let i = 0; i < extractorFunctions.length; i++) {
       const strictExtractor = extractorFunctions[i];
-      const result = strictExtractor.bind(this)(hand, this.minimumHandNumber);
+      const result = strictExtractor.bind(this)(hand, 1);
       if (result) {
         return {
           rank: extractorFunctions.length - i,
@@ -104,12 +99,29 @@ export class HandService extends HandUtil implements HandExtractor {
     }
   }
 
+  /* Must be defined as class named method to use Function#name in #getBest */
+  getPair(hand): Card[] {
+    return this.getSameOfAKind(2)(hand);
+  }
+
+  getThreeOfAKind(hand): Card[] {
+    return this.getSameOfAKind(3)(hand);
+  }
+
+  getFourOfAKind(hand): Card[] {
+    return this.getSameOfAKind(4)(hand);
+  }
+
+  getFiveOfAKind(hand): Card[] {
+    return this.getSameOfAKind(5)(hand);
+  }
+
   /**
    * Generates a function with required number of best same-rank cards
    * @param n required number of equal-rank cards
    */
   private getSameOfAKind(n: number): (hand: Card[]) => Card[] {
-    return (hand: Card[]) => {
+    const test = (hand: Card[]) => {
       if (hand.length < n)  return;
       const cardsGroupedByRank = hand.reduce((acc, card: Card) => {
         if (acc[card.rank]) {
@@ -124,6 +136,7 @@ export class HandService extends HandUtil implements HandExtractor {
       const nSameRank = nSameRanks.reduce((acc, val) => Card.relativeOperation(acc) > Card.relativeOperation(val) ? acc : val);
       return cardsGroupedByRank[nSameRank].slice(0, n);
     };
+    return test;
   }
 
   /**
@@ -202,7 +215,7 @@ export class HandService extends HandUtil implements HandExtractor {
     return [...highestRankedPair, ...lowestRankingPair];
   }
 
-  getHighCards(hand: Card[], n: number): Card[] {
+  getHighCard(hand: Card[], n: number): Card[] {
     if (!hand.length) return;
     return this.reverseOrder(hand).slice(0, n || hand.length);
   }
@@ -210,7 +223,7 @@ export class HandService extends HandUtil implements HandExtractor {
   getKicker(hand: Card[], combination: Card[], requiredHandLength: number): Card[] {
     if (hand.length < requiredHandLength) return;
     const withoutCombination = this.remove(hand, combination);
-    return this.getHighCards(withoutCombination, requiredHandLength - combination.length);
+    return this.getHighCard(withoutCombination, requiredHandLength - combination.length);
   }
 
 }

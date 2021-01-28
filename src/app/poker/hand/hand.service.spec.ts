@@ -153,7 +153,7 @@ describe('HandExtractor.getPair', () => {
 });
 
 describe('HandExtractor.getHighCard', () => {
-  const getHighCards = (hand: Card[]) => handService.getHighCards(hand, handUtil.minimumHandNumber);
+  const getHighCards = (hand: Card[]) => handService.getHighCard(hand, handUtil.minimumHandNumber);
   it('givenEmpty_whenGetHighCards_thenUndefined', () => expect(getHighCards(empty)).toBeUndefined());
   it('givenFlush_whenGetHighCards_thenOrderedFlush', () =>
     expect(getHighCards(flush).map(card => card.rank))

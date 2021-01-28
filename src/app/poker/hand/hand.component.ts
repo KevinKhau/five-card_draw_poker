@@ -16,7 +16,7 @@ export class HandComponent implements OnInit {
   ) {
   }
 
-  private readonly HAND_NUMBER = 13;
+  private readonly HAND_NUMBER = 5;
   bestHand: StrictHand;
 
   @Input()
