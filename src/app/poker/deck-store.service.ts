@@ -3,7 +3,7 @@ import {BehaviorSubject} from 'rxjs';
 import {Card, rankNumber, Suit} from '../card';
 
 @Injectable({providedIn: 'root'})
-export class DeckStoreService {
+  export class DeckStoreService {
 
   constructor() {
     this.deck = this.buildDeck();
@@ -50,10 +50,6 @@ export class DeckStoreService {
 
   addCards(cards: Card[]): void {
     this.deck.push(...cards);
-  }
-
-  removeCards(cards: Card[]): void {
-    this.deck.filter(card => !cards.includes(card));
   }
 
   drawCards(n: number): Card[] {

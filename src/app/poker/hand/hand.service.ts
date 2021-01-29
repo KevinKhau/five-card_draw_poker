@@ -69,9 +69,9 @@ export interface StrictHand {
   cards: Card[];
 
   /**
-   * All cards of the initial hand.
+   * Additional cards required for a full hand
    */
-  all: Card[];
+  kicker: Card[];
 }
 
 /**
@@ -103,15 +103,36 @@ export class HandService extends HandUtil implements HandExtractor {
           rank: extractorFunctions.length - i,
           name: strictExtractor.name.slice(3).replace(/([A-Z])/g, ' $1').trim(),
           cards: result,
-          all: hand
+          kicker: this.getKicker(hand, result, this.minimumHandNumber)
         };
       }
     }
   }
 
-  compare(hand: StrictHand, other: StrictHand): number {
-    const rankDiff = hand.rank - other.rank;
-    if (rankDiff !== 0) return rankDiff;
+  compare(strictHand: StrictHand, other: StrictHand): number {
+    /* Compare hand ranks */
+    const handRankDiff = strictHand.rank - other.rank;
+    if (handRankDiff !== 0) return handRankDiff;
+
+    /* Compare hand's card ranks */
+    const cardRankDiff = this.compareByRank(strictHand.cards, other.cards);
+    if (cardRankDiff !== 0) return cardRankDiff;
+
+    /* Compare kicker's card ranks*/
+    return this.compareByRank(strictHand.kicker, other.kicker);
+  }
+
+  /**
+   * Comparator function returning a number.
+   * @param hand input hand
+   * @param other other hand
+   * @return positive if this hand is ranked higher, negative if other is ranked higher, 0 if they're ranked equally.
+   */
+  compareByRank(hand: Card[], other: Card[]): number {
+    for (let i = 0; i < hand.length; i++) {
+      const cardRankDiff = hand[i].rank - other[i].rank;
+      if (cardRankDiff !== 0) return cardRankDiff;
+    }
     return 0;
   }
 
@@ -137,7 +158,7 @@ export class HandService extends HandUtil implements HandExtractor {
    * @param n required number of equal-rank cards
    */
   private getSameOfAKind(n: number): (hand: Card[]) => Card[] {
-    const test = (hand: Card[]) => {
+    return (hand: Card[]) => {
       if (hand.length < n)  return;
       const cardsGroupedByRank = hand.reduce((acc, card: Card) => {
         if (acc[card.rank]) {
@@ -152,7 +173,6 @@ export class HandService extends HandUtil implements HandExtractor {
       const nSameRank = nSameRanks.reduce((acc, val) => Card.relativeOperation(acc) > Card.relativeOperation(val) ? acc : val);
       return cardsGroupedByRank[nSameRank].slice(0, n);
     };
-    return test;
   }
 
   /**

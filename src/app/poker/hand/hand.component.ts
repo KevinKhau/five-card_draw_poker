@@ -10,20 +10,20 @@ import {DeckStoreService} from '../deck-store.service';
   encapsulation: ViewEncapsulation.None
 })
 export class HandComponent implements OnInit {
+  private readonly CARD_NUMBER = 5;
+
+  @Input()
+  name = 'Player';
+  cards: Card[] = [];
+  waste: Card[] = [];
+  bestHand: StrictHand;
+  isBest: boolean;
 
   constructor(
     private deckStore: DeckStoreService,
     public handService: HandService = new HandService()
   ) {
   }
-
-  private readonly CARD_NUMBER = 5;
-
-  @Input()
-  name = 'Player';
-  cards: Card[] = [];
-  bestHand: StrictHand;
-  waste: Card[] = [];
 
   ngOnInit(): void {
     this.drawCards(this.CARD_NUMBER);
