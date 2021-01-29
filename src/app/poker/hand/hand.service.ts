@@ -57,10 +57,17 @@ export class HandUtil {
 }
 
 /**
- * Hand ranked above high card, without kicker, and with metadata.
+ * Hand with more data about its content.
  */
 export interface StrictHand {
+  /**
+   * Hand rank. The highest the better: 9 Straight Flash, 7 Full House, 1 High Card.
+   */
   rank: number;
+
+  /**
+   * Name of the hand, based on the used function to extract it.
+   */
   name: string;
 
   /**

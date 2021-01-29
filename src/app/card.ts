@@ -9,8 +9,18 @@ export class Card {
     this.suit = suit;
     this.id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
   }
+
+  /**
+   * A is ranked 1. 2 is ranked 2, 10 10, 11 is Jack, 12 Queen, 13 King.
+   * A is the highest ranked, so relative ranking and comparison methods are also provided.
+   */
   rank: number;
   suit: Suit;
+
+  /**
+   * Unique identifier. While cards in a deck are unique given their rank and their suit, there are duplicates in unit tests.
+   * This id prevents potential bugs if one decides to have more than one deck.
+   */
   id?: string;
 
   /**

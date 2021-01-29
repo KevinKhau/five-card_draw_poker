@@ -6,6 +6,10 @@ mat-card.hand.best-hand {
   background-color: aquamarine;
 }
 
+.hand ul {
+  width: fit-content;
+}
+
 .shiba-inu {
   background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
   background-size: cover;
