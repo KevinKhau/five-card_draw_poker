@@ -21,7 +21,7 @@ export class HandComponent implements OnInit {
 
   constructor(
     private deckStore: DeckStoreService,
-    public handService: HandService = new HandService()
+    public handService: HandService = new HandService(),
   ) {
   }
 

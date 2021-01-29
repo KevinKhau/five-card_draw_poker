@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {DeckStoreService} from './deck-store.service';
 import {HandComponent} from './hand/hand.component';
 import {HandService} from './hand/hand.service';
@@ -9,18 +9,20 @@ import {HandService} from './hand/hand.service';
   styleUrls: ['./poker.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class PokerComponent implements AfterViewChecked {
+export class PokerComponent implements AfterViewInit {
 
   @ViewChildren(HandComponent) hands: QueryList<HandComponent>;
 
   constructor(
+    private changeDetectorRef: ChangeDetectorRef,
     public deckStore: DeckStoreService,
     private handService: HandService,
   ) {
   }
 
-  ngAfterViewChecked(): void {
+  ngAfterViewInit(): void {
     this.setBestHand();
+    this.changeDetectorRef.detectChanges();
   }
 
   roll(): void {
