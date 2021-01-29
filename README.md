@@ -21,7 +21,7 @@ Code rank | Name | Pre-draw probability
 1 | High card | 50.10%
 
 ## Application screenshot
-![Screenshot](src/assets/Five Card Draw screenshot.png)
+![Screenshot](src/assets/FiveCardDrawScreenshot.png)
 
 ## The Deck
 
