@@ -130,7 +130,7 @@ export class HandService extends HandUtil implements HandExtractor {
    */
   compareByRank(hand: Card[], other: Card[]): number {
     for (let i = 0; i < hand.length; i++) {
-      const cardRankDiff = hand[i].rank - other[i].rank;
+      const cardRankDiff = hand[i].compareRank(other[i]);
       if (cardRankDiff !== 0) return cardRankDiff;
     }
     return 0;
