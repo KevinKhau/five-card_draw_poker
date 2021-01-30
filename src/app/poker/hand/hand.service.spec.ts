@@ -16,7 +16,7 @@ describe('HandService', () => {
 });
 
 const empty = [];
-const highCard = [new Card(1, Suit.Club), new Card(2, Suit.Spade), new Card(4, Suit.Heart), new Card(13, Suit.Heart)];
+const highCard = [new Card(2, Suit.Spade), new Card(1, Suit.Club), new Card(4, Suit.Heart), new Card(13, Suit.Heart)];
 const threeWithPair = [new Card(1, Suit.Club), new Card(4, Suit.Spade), new Card(4, Suit.Heart)];
 const pair = [new Card(1, Suit.Club), new Card(4, Suit.Spade), new Card(8, Suit.Spade), new Card(13, Suit.Heart), new Card(8, Suit.Club)];
 const fourWithTwoPair = [new Card(4, Suit.Club), new Card(1, Suit.Club), new Card(4, Suit.Spade), new Card(1, Suit.Heart)];
@@ -25,9 +25,11 @@ const fiveWithTwoPair = [new Card(4, Suit.Club), new Card(1, Suit.Club), new Car
 const threeOfAKind = [new Card(6, Suit.Club), new Card(4, Suit.Spade), new Card(4, Suit.Heart), new Card(4, Suit.Diamond)];
 const straight = [new Card(5, Suit.Club), new Card(2, Suit.Spade), new Card(4, Suit.Heart), new Card(3, Suit.Heart),
   new Card(6, Suit.Heart)];
+const babyStraight = [new Card(1, Suit.Club), new Card(5, Suit.Spade), new Card(4, Suit.Heart), new Card(3, Suit.Heart),
+  new Card(2, Suit.Heart)];
 const wheelStraight = [new Card(1, Suit.Club), new Card(2, Suit.Spade), new Card(4, Suit.Heart), new Card(3, Suit.Heart),
   new Card(13, Suit.Heart)];
-const royalStraight = [new Card(1, Suit.Club), new Card(12, Suit.Spade), new Card(11, Suit.Heart), new Card(10, Suit.Heart),
+const broadwayStraight = [new Card(1, Suit.Club), new Card(12, Suit.Spade), new Card(11, Suit.Heart), new Card(10, Suit.Heart),
   new Card(13, Suit.Heart)];
 const flush = [new Card(1, Suit.Heart), new Card(12, Suit.Heart), new Card(6, Suit.Heart), new Card(9, Suit.Heart),
   new Card(10, Suit.Heart)];
@@ -59,9 +61,15 @@ const eightWithInterlopingFullHouses = [new Card(6, Suit.Club), new Card(4, Suit
 const flushAndFullHouse = [new Card(3), new Card(6), new Card(9), new Card(10), new Card(5),
   new Card(7), new Card(13), new Card(7), new Card(13), new Card(7)];
 
-const handUtil = new HandService();
 const handService = new HandService();
 const arrayContents = jasmine.arrayWithExactContents;
+
+describe('HandExtractor.getStraight', () => {
+  it('givenEmpty_whenGetStraight_thenUndefined', () => expect(handService.getStraight(empty)).toBeUndefined());
+  it('givenWheelStraight_whenGetStraight_thenUndefined', () => expect(handService.getStraight(wheelStraight)).toBeUndefined());
+  it('givenBabyStraight_whenGetStraight_thenGetStraight', () => expect(handService.getStraight(babyStraight))
+    .toEqual(arrayContents(babyStraight)));
+});
 
 describe('HandExtractor.getFlush', () => {
   it('givenEmpty_whenGetFlush_thenUndefined', () => expect(handService.getFlush(empty)).toBeUndefined());
@@ -127,7 +135,7 @@ describe('HandExtractor.getFullHouse', () => {
 
 describe('HandExtractor.getTwoPair', () => {
   it('givenEmpty_whenGetTwoPair_thenUndefined', () => expect(handService.getTwoPair(empty)).toBeUndefined());
-  it('givenPair_whenGetTwoPair_thenUndefined', () => expect(handService.getTwoPair(threeWithPair)).toBeUndefined());
+  it('givenThreeWithPair_whenGetTwoPair_thenUndefined', () => expect(handService.getTwoPair(threeWithPair)).toBeUndefined());
   it('givenFourWithTwoPair_whenGetTwoPair_thenFourWithTwoPair', () => expect(handService.getTwoPair(fourWithTwoPair))
     .toEqual(arrayContents(fourWithTwoPair)));
   it('givenFiveWithTwoPair_whenGetTwoPair_thenFiveWithTwoPair', () => expect(handService.getTwoPair(fiveWithTwoPair))
@@ -153,15 +161,18 @@ describe('HandExtractor.getPair', () => {
 });
 
 describe('HandExtractor.getHighCard', () => {
-  const getHighCards = (hand: Card[]) => handService.getHighCard(hand, handUtil.minimumHandNumber);
-  it('givenEmpty_whenGetHighCards_thenUndefined', () => expect(getHighCards(empty)).toBeUndefined());
-  it('givenFlush_whenGetHighCards_thenOrderedFlush', () =>
-    expect(getHighCards(flush).map(card => card.rank))
-      .toEqual([1, 12, 10, 9, 6]));
+  const getHighCard = (hand: Card[]) => handService.getHighCard(hand, 1);
+  it('givenEmpty_whenGetHighCards_thenUndefined', () => expect(getHighCard(empty)).toBeUndefined());
+  it('givenFourWithHighCard_whenGetHighCard_thenGetHighCard', () =>
+    expect(getHighCard(highCard))
+      .toEqual(highCard.filter(card => card.rank === 1)));
+  it('givenFlush_whenGetHighCards_thenHighCard', () =>
+    expect(getHighCard(flush).map(card => card.rank))
+      .toEqual([1]));
 });
 
 describe('handExtractor.getBest', () => {
-  const getBestCards = (hand) => handService.getBest(hand).cards;
+  const getBestCards = (hand: Card[]) => handService.getBest(hand).cards;
   it('givenEmpty_whenGetBest_thenUndefined', () => expect(handService.getBest(empty)).toBeUndefined());
   it('givenEightWithInterlopingFullHouses_whenGetBest_thenFullHouse', () => {
     const result = handService.getBest(eightWithInterlopingFullHouses);
@@ -177,7 +188,7 @@ describe('handExtractor.getBest', () => {
     expect(getBestCards(flush).map(card => card.rank))
       .toEqual([1, 12, 10, 9, 6]));
   it('givenRoyalStraight_whenGetBest_thenRoyalStraight', () =>
-    expect(getBestCards(royalStraight).map(card => card.rank))
+    expect(getBestCards(broadwayStraight).map(card => card.rank))
       .toEqual([1, 13, 12, 11, 10]));
   it('givenSevenWithFiveOfAKind_whenGetBest_thenRoyalStraight', () => {
     const result = handService.getBest(sevenWithFiveOfAKind);

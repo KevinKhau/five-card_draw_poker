@@ -30,22 +30,14 @@ export class Card {
   static relativeOperation = n => positiveModulo(n - 2, rankNumber);
 
   /**
-   * In the given hand, has a card ranked `difference` lower
-   * @param difference Search difference of ranking
-   * @param hand Hand of cards to search in
-   */
-  hasLower(difference: number, hand: Card[]): boolean {
-    return hand.some(c => difference === this.compareRank(c));
-  }
-
-  /**
-   * In the given hand, gets a card ranked `difference` lower
+   * In the given hand, gets a card ranked `difference` lower.
+   *
    * @param difference Search difference of ranking
    * @param hand Hand of cards to search in
    * @return The lower-ranked card, or undefined if not found
    */
   getLower(difference: number, hand: Card[]): Card {
-    return hand.find(c => difference === this.compareRank(c));
+    return hand.find(c => difference === positiveModulo(this.compareRank(c), rankNumber));
   }
 
   /**

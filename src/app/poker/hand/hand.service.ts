@@ -183,14 +183,21 @@ export class HandService extends HandUtil implements HandExtractor {
   }
 
   /**
-   * Extracts the straight with the highest card.
+   * Extracts the straight with the highest card. While the A is the best single ranking card,
+   * a baby straight [5, 4, 3, 2, 1] is the lowest straight.
+   *
    * @param hand A hand of any number of cards.
    */
    getStraight(hand: Card[]): Card[] {
     if (!this.hasMinimumCardNumber(hand)) return;
     hand = this.reverseOrder(hand);
     const diffRange: number[] = Array.from({length: this.minimumHandNumber - 1}, (_, i) => i + 1); // [1, 2, 3, 4]
-    for (let i = 0; i < hand.length - (this.minimumHandNumber - 1); i++) {
+    /**
+     * Do not analyze the last three cards. While there can be a baby straight from 5 to A,
+     * a five-card straight with a 4 as highest-ranked card does not exist. A cyclic straight [4, 3, 2, A, K] is invalid.
+     */
+    const cardsToAnalyze = hand.length - (this.minimumHandNumber - 2);
+    for (let i = 0; i < cardsToAnalyze; i++) {
       let buffer: Card[] = [hand[i]];
       for (const diff of diffRange) {
         const lowerCard = hand[i].getLower(diff, hand);
