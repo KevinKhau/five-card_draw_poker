@@ -1,6 +1,5 @@
 mat-card.hand {
   margin: 5px;
-  width: 430px;
 }
 mat-card.hand.best-hand {
   background-color: aquamarine;
@@ -33,7 +32,6 @@ mat-card.hand.best-hand {
 
 mat-form-field.player {
   width: 80px;
-
 }
 .mat-form-field-infix {
   border-top: 0;
