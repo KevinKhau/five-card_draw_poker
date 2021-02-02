@@ -21,6 +21,7 @@ ul {
   vertical-align: top;
   text-align: center;
   user-select: none;
+  background-color: white;
 }
 
 li.heart, li.diamond {
