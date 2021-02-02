@@ -2,6 +2,8 @@
 
 This project is an implementation of the Five Card Draw, a poker variant. Some have difficulties understanding which hand is the best, so I made this version directly highlighting that. :smile:
 
+Want to have a look? Try it here: https://kevinkhau.github.io/five-card_draw_poker/
+
 ## The Five Card Draw, poker variant
 
 Find more about it: https://en.wikipedia.org/wiki/Five-card_draw
