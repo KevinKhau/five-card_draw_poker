@@ -37,9 +37,6 @@ export const material = [
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot([
-      {path: 'poker', component: PokerComponent},
-    ]),
     ...material,
   ],
   providers: [],
