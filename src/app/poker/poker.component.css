@@ -23,6 +23,9 @@
   padding: 7px;
 }
 
+.hands {
+  max-width: 900px;
+}
 .hands > app-hand {
   display: inline-block;
 }
