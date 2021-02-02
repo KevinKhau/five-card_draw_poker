@@ -69,6 +69,8 @@ describe('HandExtractor.getStraight', () => {
   it('givenWheelStraight_whenGetStraight_thenUndefined', () => expect(handService.getStraight(wheelStraight)).toBeUndefined());
   it('givenBabyStraight_whenGetStraight_thenGetStraight', () => expect(handService.getStraight(babyStraight))
     .toEqual(arrayContents(babyStraight)));
+  it('givenRoyalFlush_whenGetStraight_thenGetStraight', () => expect(handService.getStraight(royalFlush))
+    .toEqual(arrayContents(royalFlush)));
 });
 
 describe('HandExtractor.getFlush', () => {
