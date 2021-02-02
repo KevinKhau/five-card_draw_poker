@@ -23,7 +23,7 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "assets": [
-              "src/favicon.ico",
+              "src/playing-cards-icon.png",
               "src/assets"
             ],
             "styles": [
