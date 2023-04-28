@@ -161,7 +161,7 @@ export class HandService extends HandUtil implements HandExtractor {
   }
 
   /**
-   * Generates a function with required number of best same-rank cards
+   * Returns best same-rank cards
    * @param n required number of equal-rank cards
    */
   private getSameOfAKind(n: number): (hand: Card[]) => Card[] {
